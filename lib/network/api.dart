@@ -44,14 +44,6 @@ class Network {
         recoveredDelta: int.parse(keyValues["recovereddelta"]),
         lastupdatedtime: dateInString);
 
-//    DateTime now = DateTime.now();
-//    DateTime dateTimeCreatedAt = DateTime.parse(lastupdatedtime);
-//    String formattedDate = new DateFormat('dd/MM/yyyy HH:mm:ss').format(now);
-//
-//    logv("mainkeyValuesData == $lastupdatedtime");
-//    logv("formattedDate == $formattedDate");
-//    logv("dateTimeCreatedAt == $dateTimeCreatedAt");
-
     return mainData;
   }
 
@@ -91,15 +83,12 @@ class Network {
     List<DistrictData> districtDataList = List();
 
     data.forEach((stateName, value) {
-//      logv("stateNames == $stateName");
 
       List<DData> dDataList = List();
 
       Map stateDataMap = Map.from(value["districtData"]);
 
       stateDataMap.forEach((districtName, value) {
-//        logv(
-//            "districtName == $districtName || confirmed == ${value["confirmed"]}");
         dDataList.add(
             DData(districtName: districtName, confirmed: value["confirmed"].toString()));
       });

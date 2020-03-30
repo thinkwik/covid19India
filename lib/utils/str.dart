@@ -5,13 +5,13 @@ class STR {
 
   static String APP_HEADER = "INDIA COVID-19 TRACKER";
   static String APP_TAGLINE = "A THINKWIK INDIA INITATIVE";
-  static String LAST_UPDATED = "Last Updated at";
+  static String LAST_UPDATED = "Last Updated: ";
   static String LAST_UPDATETIME = "ABOUT ";
 
-  static String CONFIRMED = "CONFIRMED";
-  static String ACTIVE = "ACTIVE";
-  static String RECOVERED = "RECOVERED";
-  static String DECEASED = "DECEASED";
+  static String CONFIRMED = "Confirmed";
+  static String ACTIVE = "Active";
+  static String RECOVERED = "Recovered";
+  static String DECEASED = "Death";
 
   static String tableDistrict = "District";
   static String tableStatesUT = "States/UT";

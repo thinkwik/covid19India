@@ -8,11 +8,6 @@ import 'package:covid19app/network/api.dart';
 import 'package:covid19app/utils/str.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:latlong/latlong.dart';
-
-
 
 extension IndexedIterable<E> on Iterable<E> {
   Iterable<T> mapIndexed<T>(T f(E e, int i)) {
@@ -20,11 +15,6 @@ extension IndexedIterable<E> on Iterable<E> {
     return this.map((e) => f(e, i++));
   }
 }
-
-final String indiaMap = 'assets/india.svg';
-
-final Widget svgIcon = SvgPicture.asset(indiaMap,
-    color: Colors.red, semanticsLabel: 'A red up arrow');
 
 class MyApp extends StatefulWidget {
   @override
@@ -47,7 +37,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   bool _visible = false;
 
   TextStyle commonStyleHeader =
-  TextStyle(fontSize: 14, fontWeight: FontWeight.w900);
+      TextStyle(fontSize: 14, fontWeight: FontWeight.w900);
   TextStyle commonStyle = TextStyle(fontSize: 24, fontWeight: FontWeight.w400);
 
   List<TableData> tableData = List();
@@ -187,37 +177,37 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                     ),
                   ],
                 ),
-                AnimatedOpacity(
-                  opacity: _visible ? 1.0 : 0.0,
-                  duration: Duration(milliseconds: 200),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      children: <Widget>[
-                        StatsItem(
-                            myColor: Colors.red,
-                            title: STR.CONFIRMED,
-                            increased: totalDelta,
-                            total: total),
-                        StatsItem(
-                            myColor: Colors.blue[600],
-                            title: STR.ACTIVE,
-                            increased: activeDelta,
-                            total: active),
-                        StatsItem(
-                            myColor: Colors.green,
-                            title: STR.RECOVERED,
-                            increased: recoveredDelta,
-                            total: recovered),
-                        StatsItem(
-                            myColor: Colors.grey[500],
-                            title: STR.DECEASED,
-                            increased: deathDelta,
-                            total: death),
-                      ],
-                    ),
-                  ),
-                ),
+//                AnimatedOpacity(
+//                  opacity: _visible ? 1.0 : 0.0,
+//                  duration: Duration(milliseconds: 200),
+//                  child: Padding(
+//                    padding: const EdgeInsets.all(8.0),
+//                    child: Row(
+//                      children: <Widget>[
+//                        StatsItem(
+//                            myColor: Colors.red,
+//                            title: STR.CONFIRMED,
+//                            increased: totalDelta,
+//                            total: total),
+//                        StatsItem(
+//                            myColor: Colors.blue[600],
+//                            title: STR.ACTIVE,
+//                            increased: activeDelta,
+//                            total: active),
+//                        StatsItem(
+//                            myColor: Colors.green,
+//                            title: STR.RECOVERED,
+//                            increased: recoveredDelta,
+//                            total: recovered),
+//                        StatsItem(
+//                            myColor: Colors.grey[500],
+//                            title: STR.DECEASED,
+//                            increased: deathDelta,
+//                            total: death),
+//                      ],
+//                    ),
+//                  ),
+//                ),
                 SizedBox(
                   height: 10,
                 ),
@@ -234,7 +224,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                         flexSize: 2,
                         delta: 0,
                         isStateName: true,
-                        onSelect:() {},
+                        onSelect: () {},
                       ),
                       TableItems(
                         bgColor: Colors.grey[300],
@@ -244,7 +234,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                         flexSize: 1,
                         delta: 0,
                         isStateName: false,
-                        onSelect:() {},
+                        onSelect: () {},
                       ),
                       TableItems(
                         bgColor: Colors.grey[300],
@@ -254,7 +244,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                         flexSize: 1,
                         delta: 0,
                         isStateName: false,
-                        onSelect:() {},
+                        onSelect: () {},
                       ),
                       TableItems(
                         bgColor: Colors.grey[300],
@@ -264,7 +254,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                         flexSize: 1,
                         delta: 0,
                         isStateName: false,
-                        onSelect:() {},
+                        onSelect: () {},
                       ),
                       TableItems(
                         bgColor: Colors.grey[300],
@@ -274,7 +264,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                         flexSize: 1,
                         delta: 0,
                         isStateName: false,
-                        onSelect:() {},
+                        onSelect: () {},
                       ),
                     ],
                   ),
@@ -285,12 +275,15 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
                   child: Column(
                     children: tableData
                         .mapIndexed((value, index) => TableRowsGenerator(
-                        tableData: value,
-                        index: index,
-                        lastIndex: tableData.length,
-                        stateDelta: value.stateDelta))
+                            tableData: value,
+                            index: index,
+                            lastIndex: tableData.length,
+                            stateDelta: value.stateDelta))
                         .toList(),
                   ),
+                ),
+                SizedBox(
+                  height: 10,
                 ),
                 SizedBox(
                   height: 100,
@@ -300,33 +293,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           ),
         ),
       ),
-    );
-  }
-}
-
-class Map extends StatefulWidget {
-  @override
-  _MapState createState() => _MapState();
-}
-
-class _MapState extends State<Map> {
-  @override
-  Widget build(BuildContext context) {
-    return FlutterMap(
-      options: new MapOptions(
-        center: LatLng(45.5231, -122.6765),
-        zoom: 13.0,
-      ),
-      layers: [
-        TileLayerOptions(
-          urlTemplate: "https://api.tiles.mapbox.com/v4/"
-              "{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}",
-          additionalOptions: {
-            'accessToken': 'pk.eyJ1IjoiamluZXNoc29uaSIsImEiOiJjazhkNGFmMWMwczdtM3BxdHA5ZDFsazE4In0.Anj8-kj0a5-QWZ3jrEFRYQ',
-            'id': 'mapbox.streets',
-          },
-        ),
-      ],
     );
   }
 }

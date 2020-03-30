@@ -120,37 +120,37 @@ class _StateWiseDetailState extends State<StateWiseDetail>
               SizedBox(
                 height: 10,
               ),
-              AnimatedOpacity(
-                opacity: _visible ? 1.0 : 0.0,
-                duration: Duration(milliseconds: 200),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    children: <Widget>[
-                      StatsItem(
-                          myColor: Colors.red,
-                          title: STR.CONFIRMED,
-                          increased: tableData.stateDelta.confirmed,
-                          total: int.parse(tableData.confirmed)),
-                      StatsItem(
-                          myColor: Colors.blue[600],
-                          title: STR.ACTIVE,
-                          increased: tableData.stateDelta.active,
-                          total: int.parse(tableData.active)),
-                      StatsItem(
-                          myColor: Colors.green,
-                          title: STR.RECOVERED,
-                          increased: tableData.stateDelta.recovered,
-                          total: int.parse(tableData.recovered)),
-                      StatsItem(
-                          myColor: Colors.grey[500],
-                          title: STR.DECEASED,
-                          increased: tableData.stateDelta.deaths,
-                          total: int.parse(tableData.deceases)),
-                    ],
-                  ),
-                ),
-              ),
+//              AnimatedOpacity(
+//                opacity: _visible ? 1.0 : 0.0,
+//                duration: Duration(milliseconds: 200),
+//                child: Padding(
+//                  padding: const EdgeInsets.all(8.0),
+//                  child: Row(
+//                    children: <Widget>[
+//                      StatsItem(
+//                          myColor: Colors.red,
+//                          title: STR.CONFIRMED,
+//                          increased: tableData.stateDelta.confirmed,
+//                          total: int.parse(tableData.confirmed)),
+//                      StatsItem(
+//                          myColor: Colors.blue[600],
+//                          title: STR.ACTIVE,
+//                          increased: tableData.stateDelta.active,
+//                          total: int.parse(tableData.active)),
+//                      StatsItem(
+//                          myColor: Colors.green,
+//                          title: STR.RECOVERED,
+//                          increased: tableData.stateDelta.recovered,
+//                          total: int.parse(tableData.recovered)),
+//                      StatsItem(
+//                          myColor: Colors.grey[500],
+//                          title: STR.DECEASED,
+//                          increased: tableData.stateDelta.deaths,
+//                          total: int.parse(tableData.deceases)),
+//                    ],
+//                  ),
+//                ),
+//              ),
               SizedBox(
                 height: 10,
               ),
