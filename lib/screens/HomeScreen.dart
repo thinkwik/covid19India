@@ -159,10 +159,17 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(
-        SystemUiOverlayStyle(statusBarColor: HEX.primaryColor));
+//    SystemChrome.setSystemUIOverlayStyle(
+//        SystemUiOverlayStyle(statusBarColor: HEX.primaryColor));
 
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(1.0),
+        child: AppBar(
+          elevation: 0,
+          backgroundColor: HEX.primaryColor,
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           getAllData();
