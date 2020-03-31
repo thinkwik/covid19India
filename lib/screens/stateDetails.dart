@@ -34,6 +34,7 @@ class _StateWiseDetailState extends State<StateWiseDetail>
     Network().getStateDetailedData().then((value) {
       setState(() {
         districtDataList = value;
+        tableDataList.clear();
       });
     });
   }
@@ -64,8 +65,7 @@ class _StateWiseDetailState extends State<StateWiseDetail>
         ModalRoute.of(context).settings.arguments;
     filterFor = rcvdData['name'];
     TableData tableData = rcvdData['tableData'];
-    tableDataList.clear();
-
+    
     List<DistrictData> finalData = districtDataList
         .where((element) =>
             element.stateName.toLowerCase() == filterFor.toLowerCase())
@@ -90,6 +90,7 @@ class _StateWiseDetailState extends State<StateWiseDetail>
         ));
       });
     });
+
     tableDataList.add(TableData(
         stateName: "Total",
         confirmed: tableData.confirmed,
@@ -103,111 +104,99 @@ class _StateWiseDetailState extends State<StateWiseDetail>
       appBar: AppBar(
         elevation: 0,
         iconTheme: IconThemeData(
-          color: Colors.black, //change your color here
+          color: Colors.white, //change your color here
         ),
         title: Text(filterFor,
         style: TextStyle(
-          color: Colors.black
+          color: Colors.white
         ),),
-        backgroundColor: Colors.grey[50],
+        backgroundColor: HEX.primaryColor,
         centerTitle: true,
       ),
       body: Center(
         child: Container(
-          width: 480,
+          width: 480.0,
+          color: HEX.primaryColor,
           child: ListView(
             children: <Widget>[
               SizedBox(
                 height: 10,
               ),
-//              AnimatedOpacity(
-//                opacity: _visible ? 1.0 : 0.0,
-//                duration: Duration(milliseconds: 200),
-//                child: Padding(
-//                  padding: const EdgeInsets.all(8.0),
-//                  child: Row(
-//                    children: <Widget>[
-//                      StatsItem(
-//                          myColor: Colors.red,
-//                          title: STR.CONFIRMED,
-//                          increased: tableData.stateDelta.confirmed,
-//                          total: int.parse(tableData.confirmed)),
-//                      StatsItem(
-//                          myColor: Colors.blue[600],
-//                          title: STR.ACTIVE,
-//                          increased: tableData.stateDelta.active,
-//                          total: int.parse(tableData.active)),
-//                      StatsItem(
-//                          myColor: Colors.green,
-//                          title: STR.RECOVERED,
-//                          increased: tableData.stateDelta.recovered,
-//                          total: int.parse(tableData.recovered)),
-//                      StatsItem(
-//                          myColor: Colors.grey[500],
-//                          title: STR.DECEASED,
-//                          increased: tableData.stateDelta.deaths,
-//                          total: int.parse(tableData.deceases)),
-//                    ],
-//                  ),
-//                ),
-//              ),
-              SizedBox(
-                height: 10,
-              ),
               Padding(
-                padding: const EdgeInsets.all(0.0),
-                child: Container(
-                  child: Column(
+                padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0.0),
+                child: AnimatedOpacity(
+                  opacity: _visible ? 1.0 : 0.0,
+                  duration: Duration(milliseconds: 200),
+                  child: Row(
                     children: <Widget>[
-                      AnimatedOpacity(
-                        opacity: _visible ? 1.0 : 0.0,
-                        duration: Duration(milliseconds: 200),
-                        child: Row(
-                          children: <Widget>[
-                            TableItems(
-                              bgColor: Colors.grey[300],
-                              title: STR.tableDistrict,
-                              myFontSize: 13.0,
-                              myFontWeight: FontWeight.bold,
-                              flexSize: 1,
-                              delta: 0,
-                              isStateName: true,
-                              onSelect:() {},
-                            ),
-                            TableItems(
-                              bgColor: Colors.grey[300],
-                              title: STR.CONFIRMED,
-                              myFontSize: 12.0,
-                              myFontWeight: FontWeight.bold,
-                              flexSize: 1,
-                              delta: 0,
-                              isStateName: false,
-                              onSelect:() {},
-                            ),
-                          ],
-                        ),
-                      ),
-                      AnimatedOpacity(
-                        opacity: _visible ? 1.0 : 0.0,
-                        duration: Duration(milliseconds: 200),
-                        child: Column(
-                          children: tableDataList
-                              .mapIndexed((value, index) => DistrictTableRowsGenerator(
-                              tableData: value,
-                              index: index,
-                              lastIndex: tableDataList.length,
-                              stateDelta: value.stateDelta))
-                              .toList(),
-                        ),
-                      ),
+                      StatsItem(
+                          myImage: "ic_confirmed",
+                          title: STR.CONFIRMED,
+                          increased: tableData.stateDelta.confirmed,
+                          total: int.parse(tableData.confirmed)),
+                      StatsItem(
+                          myImage: "ic_active",
+                          title: STR.ACTIVE,
+                          increased: tableData.stateDelta.active,
+                          total: int.parse(tableData.active)),
+                      StatsItem(
+                          myImage: "ic_recovered",
+                          title: STR.RECOVERED,
+                          increased: tableData.stateDelta.recovered,
+                          total: int.parse(tableData.recovered)),
+                      StatsItem(
+                          myImage: "ic_rip",
+                          title: STR.DECEASED,
+                          increased: tableData.stateDelta.deaths,
+                          total: int.parse(tableData.deceases)),
                     ],
                   ),
                 ),
               ),
-
               SizedBox(
-                height: 100,
+                height: 10,
               ),
+              AnimatedOpacity(
+                opacity: _visible ? 1.0 : 0.0,
+                duration: Duration(milliseconds: 200),
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(25),
+                        topRight: Radius.circular(25),
+                        bottomLeft: Radius.circular(25),
+                        bottomRight: Radius.circular(25)),
+                  ),
+                  child: Padding(
+                    padding:
+                    const EdgeInsets.fromLTRB(16.0, 24.0, 16.0, 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text("District Wise Cases",
+                            style: TextStyle(
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.black)),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        Column(
+                          children: tableDataList.mapIndexed((value, index) =>
+                              DistrictTableRowsGenerator(
+                                  tableData: value,
+                                  index: index,
+                                  lastIndex: tableDataList.length,
+                                  stateDelta: value.stateDelta))
+                              .toList(),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
             ],
           ),
         ),

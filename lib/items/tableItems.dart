@@ -1,5 +1,6 @@
 import 'package:covid19app/model/stateDelta.dart';
 import 'package:covid19app/model/tableData.dart';
+import 'package:covid19app/utils/str.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -7,62 +8,148 @@ import 'package:flutter/rendering.dart';
 class TableItems extends StatelessWidget {
   final Color bgColor;
   final String title;
+  final String data;
   final double myFontSize;
   final FontWeight myFontWeight;
-  final int flexSize;
   final int delta;
+  final int myFlex;
   final bool isStateName;
-  Function onSelect;
 
-  TableItems(
-      {this.bgColor,
-      this.title,
-      this.myFontSize,
-      this.myFontWeight,
-      this.flexSize,
-      this.delta,
-      this.isStateName,
-      this.onSelect});
+  TableItems({
+    this.bgColor,
+    this.title,
+    this.data,
+    this.myFontSize,
+    this.myFontWeight,
+    this.delta,
+    this.myFlex,
+    this.isStateName,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      flex: flexSize,
+      flex: myFlex,
       child: Padding(
-        padding: const EdgeInsets.all(1.0),
-        child: GestureDetector(
-          onTap: onSelect,
-          child: Container(
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(5),
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              title,
+              style: TextStyle(
+                  fontSize: myFontSize,
+                  fontWeight: myFontWeight,
+                  color: bgColor),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: RichText(
-                textAlign: (isStateName) ? TextAlign.start : TextAlign.end,
-                text: TextSpan(children: <TextSpan>[
-                  TextSpan(
-                    text: (delta > 0 && myFontWeight != FontWeight.bold)
-                        ? "+$delta  "
-                        : "",
-                    style: TextStyle(
-                        fontSize: myFontSize - 2,
-                        fontWeight: myFontWeight,
-                        color: Colors.red),
-                  ),
-                  TextSpan(
-                    text: title,
-                    style: TextStyle(
-                        letterSpacing: 1.0,
-                        fontSize: myFontSize,
-                        fontWeight: myFontWeight,
-                        color: Colors.black),
-                  ),
-                ]),
+            Visibility(
+              visible: (data.length > 0),
+              child: SizedBox(
+                height: 5.0,
               ),
             ),
-          ),
+            Visibility(
+                visible: (data.length > 0),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      data,
+                      style: TextStyle(
+                          letterSpacing: 1.0,
+                          fontSize: myFontSize,
+                          fontWeight: myFontWeight,
+                          color: Colors.black),
+                    ),
+                    SizedBox(
+                      width: 5.0,
+                    ),
+                    Text(
+                      (delta > 0 && myFontWeight != FontWeight.bold)
+                          ? "  +$delta  "
+                          : "",
+                      style: TextStyle(
+                          fontSize: myFontSize - 2,
+                          fontWeight: myFontWeight,
+                          color: Colors.red),
+                    ),
+                  ],
+                )),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class TableDistrictItems extends StatelessWidget {
+  final Color bgColor;
+  final String title;
+  final String data;
+  final double myFontSize;
+  final FontWeight myFontWeight;
+  final int delta;
+  final int myFlex;
+  final bool isStateName;
+
+  TableDistrictItems({
+    this.bgColor,
+    this.title,
+    this.data,
+    this.myFontSize,
+    this.myFontWeight,
+    this.delta,
+    this.myFlex,
+    this.isStateName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      flex: myFlex,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: <Widget>[
+            Text(
+              title,
+              style: TextStyle(
+                  fontSize: myFontSize,
+                  fontWeight: myFontWeight,
+                  color: bgColor),
+            ),
+            Visibility(
+              visible: (data.length > 0),
+              child: SizedBox(
+                height: 5.0,
+              ),
+            ),
+            Visibility(
+                visible: (data.length > 0),
+                child: Row(
+                  children: <Widget>[
+                    Text(
+                      data,
+                      style: TextStyle(
+                          letterSpacing: 1.0,
+                          fontSize: myFontSize,
+                          fontWeight: myFontWeight,
+                          color: Colors.black),
+                    ),
+                    SizedBox(
+                      width: 5.0,
+                    ),
+                    Text(
+                      (delta > 0 && myFontWeight != FontWeight.bold)
+                          ? "  +$delta  "
+                          : "",
+                      style: TextStyle(
+                          fontSize: myFontSize - 2,
+                          fontWeight: myFontWeight,
+                          color: Colors.red),
+                    ),
+                  ],
+                )),
+          ],
         ),
       ),
     );
@@ -77,85 +164,107 @@ class TableRowsGenerator extends StatelessWidget {
   FontWeight genFontWeight = FontWeight.w500;
   int lastIndex;
   StateDelta stateDelta;
+  Function onSelect;
 
   TableRowsGenerator(
-      {this.tableData, this.index, this.lastIndex, this.stateDelta}) {
-//    logv("index == $index || last == $lastIndex");
+      {this.tableData,
+      this.index,
+      this.lastIndex,
+      this.stateDelta,
+      this.onSelect}) {
     myColor = (index % 2) == 0 ? Colors.grey[50] : Colors.grey[200];
     if ((lastIndex - 1) == index) {
       genFontWeight = FontWeight.bold;
       myColor = Colors.grey[300];
     }
-//    else tableData.stateName = tableData.stateName + ">";
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              TableItems(
-                bgColor: myColor,
-                title: tableData.stateName+">",
-                myFontSize: genFontSize,
-                myFontWeight: genFontWeight,
-                flexSize: 2,
-                delta: 0,
-                isStateName: true,
-                onSelect: () {
-                  Navigator.pushNamed(context, "/details", arguments: {
-                    "name": tableData.stateName,
-                    "tableData": tableData,
-                  });
-                },
-              ),
-              TableItems(
-                bgColor: myColor,
-                title: tableData.confirmed,
-                myFontSize: genFontSize,
-                myFontWeight: genFontWeight,
-                flexSize: 1,
-                delta: stateDelta.confirmed,
-                isStateName: false,
-                onSelect: () {},
-              ),
-              TableItems(
-                bgColor: myColor,
-                title: tableData.active,
-                myFontSize: genFontSize,
-                myFontWeight: genFontWeight,
-                flexSize: 1,
-                delta: stateDelta.active,
-                isStateName: false,
-                onSelect: () {},
-              ),
-              TableItems(
-                bgColor: myColor,
-                title: tableData.recovered,
-                myFontSize: genFontSize,
-                myFontWeight: genFontWeight,
-                flexSize: 1,
-                delta: stateDelta.recovered,
-                isStateName: false,
-                onSelect: () {},
-              ),
-              TableItems(
-                bgColor: myColor,
-                title: tableData.deceases,
-                myFontSize: genFontSize,
-                myFontWeight: genFontWeight,
-                flexSize: 1,
-                delta: stateDelta.deaths,
-                isStateName: false,
-                onSelect: () {},
-              ),
-            ],
+    return Container(
+      padding: EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 4.0),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.pushNamed(context, "/details", arguments: {
+            "name": tableData.stateName,
+            "tableData": tableData,
+          });
+        },
+        child: Material(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+              side: BorderSide(color: Colors.grey),
+              borderRadius: BorderRadius.circular(15)),
+          child: Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Row(children: <Widget>[
+                  TableItems(
+                    bgColor: Colors.black,
+                    title: tableData.stateName,
+                    data: "",
+                    myFontSize: genFontSize + 2,
+                    myFontWeight: FontWeight.bold,
+                    delta: 0,
+                    myFlex: 1,
+                    isStateName: true,
+                  ),
+                  Icon(
+                    Icons.keyboard_arrow_right,
+                    size: 20.0,
+                  )
+                ]),
+                Row(
+                  children: <Widget>[
+                    TableItems(
+                      myFlex: 1,
+                      bgColor: Colors.red,
+                      title: STR.CONFIRMED,
+                      data: tableData.confirmed,
+                      myFontSize: genFontSize,
+                      myFontWeight: genFontWeight,
+                      delta: stateDelta.confirmed,
+                      isStateName: false,
+                    ),
+                    TableItems(
+                      myFlex: 1,
+                      bgColor: Colors.green,
+                      title: STR.ACTIVE,
+                      data: tableData.active,
+                      myFontSize: genFontSize,
+                      myFontWeight: genFontWeight,
+                      delta: stateDelta.active,
+                      isStateName: false,
+                    ),
+                    TableItems(
+                      myFlex: 1,
+                      bgColor: Colors.pinkAccent,
+                      title: STR.RECOVERED,
+                      data: tableData.recovered,
+                      myFontSize: genFontSize,
+                      myFontWeight: genFontWeight,
+                      delta: stateDelta.recovered,
+                      isStateName: false,
+                    ),
+                    TableItems(
+                      myFlex: 1,
+                      bgColor: Colors.grey,
+                      title: STR.DECEASED,
+                      data: tableData.deceases,
+                      myFontSize: genFontSize,
+                      myFontWeight: genFontWeight,
+                      delta: stateDelta.deaths,
+                      isStateName: false,
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-      ],
+      ),
     );
   }
 }
@@ -171,47 +280,53 @@ class DistrictTableRowsGenerator extends StatelessWidget {
 
   DistrictTableRowsGenerator(
       {this.tableData, this.index, this.lastIndex, this.stateDelta}) {
-//    logv("index == $index || last == $lastIndex");
     myColor = (index % 2) == 0 ? Colors.grey[50] : Colors.grey[200];
     if ((lastIndex - 1) == index) {
       genFontWeight = FontWeight.bold;
       myColor = Colors.grey[300];
     }
-//    else tableData.stateName = tableData.stateName + ">";
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        IntrinsicHeight(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+    return Container(
+      padding: EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 4.0),
+      child: Material(
+        color: Colors.white,
+        shape: RoundedRectangleBorder(
+            side: BorderSide(color: Colors.grey),
+            borderRadius: BorderRadius.circular(15)),
+        child: Padding(
+          padding: const EdgeInsets.all(4.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              TableItems(
-                bgColor: myColor,
-                title: tableData.stateName,
-                myFontSize: genFontSize,
-                myFontWeight: genFontWeight,
-                flexSize: 2,
-                delta: 0,
-                isStateName: true,
-                onSelect: () {},
-              ),
-              TableItems(
-                bgColor: myColor,
-                title: tableData.confirmed,
-                myFontSize: genFontSize,
-                myFontWeight: genFontWeight,
-                flexSize: 2,
-                delta: stateDelta.confirmed,
-                isStateName: false,
-                onSelect: () {},
-              ),
+              Row(children: <Widget>[
+                TableDistrictItems(
+                  bgColor: Colors.black,
+                  title: tableData.stateName,
+                  data: "",
+                  myFontSize: genFontSize + 2,
+                  myFontWeight: FontWeight.bold,
+                  delta: 0,
+                  myFlex: 3,
+                  isStateName: true,
+                ),
+                TableDistrictItems(
+                  myFlex: 2,
+                  bgColor: Colors.red,
+                  title: "${STR.CONFIRMED}: ",
+                  data: tableData.confirmed,
+                  myFontSize: genFontSize + 2,
+                  myFontWeight: genFontWeight,
+                  delta: stateDelta.confirmed,
+                  isStateName: false,
+                ),
+              ]),
             ],
           ),
         ),
-      ],
+      ),
     );
   }
 }

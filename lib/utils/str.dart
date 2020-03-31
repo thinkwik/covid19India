@@ -11,7 +11,7 @@ class STR {
   static String CONFIRMED = "Confirmed";
   static String ACTIVE = "Active";
   static String RECOVERED = "Recovered";
-  static String DECEASED = "Death";
+  static String DECEASED = "Deceased";
 
   static String tableDistrict = "District";
   static String tableStatesUT = "States/UT";

@@ -14,9 +14,9 @@ void main() {
     theme: ThemeData(
       primarySwatch: Colors.blue,
     ),
-    initialRoute: "/home",
+    initialRoute: "/",
     routes: {
-      "/": (context) => NavigationScreen(),
+      "/": (context) => HomeScreen(),
       "/home": (context) => HomeScreen(),
       "/details": (context) => StateWiseDetail()
     },
