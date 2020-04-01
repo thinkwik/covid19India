@@ -185,13 +185,6 @@ class TableRowsGenerator extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(0.0, 4.0, 0.0, 4.0),
       child: GestureDetector(
         onTap: onSelect,
-//
-//            () {
-//          Navigator.pushNamed(context, "/details", arguments: {
-//            "name": tableData.stateName,
-//            "tableData": tableData,
-//          });
-//        },
         child: Material(
           color: Colors.white,
           shape: RoundedRectangleBorder(

@@ -1,9 +1,11 @@
 import 'package:covid19app/items/tableItems.dart';
 import 'package:covid19app/model/districtData.dart';
+import 'package:covid19app/model/screenSwitcher.dart';
 import 'package:covid19app/model/stateDelta.dart';
 import 'package:covid19app/model/tableData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 extension IndexedIterable<E> on Iterable<E> {
   Iterable<T> mapIndexed<T>(T f(E e, int i)) {
@@ -15,18 +17,19 @@ extension IndexedIterable<E> on Iterable<E> {
 class StateList extends StatelessWidget {
   final List<TableData> tableData;
   final List<DistrictData> districtDataList;
-  final ValueNotifier<Widget> notifier;
 
-  StateList({this.tableData, this.districtDataList, this.notifier});
+  StateList({this.tableData, this.districtDataList});
 
   @override
   Widget build(BuildContext context) {
+    final ScreenBloc screenBloc = Provider.of<ScreenBloc>(context);
+
     return Column(
+      key: UniqueKey(),
       children: <Widget>[
         HeaderText(
           tableData: tableData,
           stateName: "",
-          notifier: notifier,
           districtDataList: districtDataList,
           visibleDistrict: false,
         ),
@@ -38,11 +41,7 @@ class StateList extends StatelessWidget {
                     lastIndex: tableData.length,
                     stateDelta: value.stateDelta,
                     onSelect: () {
-                      notifier.value = DistrictList(
-                          tableData: tableData,
-                          districtDataList: districtDataList,
-                          notifier: notifier,
-                          stateName: value.stateName);
+                      screenBloc.setForDistrict(2, value.stateName);
                     },
                   ))
               .toList(),
@@ -51,21 +50,16 @@ class StateList extends StatelessWidget {
     );
   }
 }
+
 // ignore: must_be_immutable
 class DistrictList extends StatelessWidget {
   final List<TableData> tableData;
-  final Function onSelect;
   final List<DistrictData> districtDataList;
-  List<TableData> tableDataList = List();
-  final ValueNotifier<Widget> notifier;
   final String stateName;
 
-  DistrictList(
-      {this.tableData,
-      this.districtDataList,
-      this.onSelect,
-      this.notifier,
-      this.stateName}) {
+  List<TableData> tableDataList = List();
+
+  DistrictList({this.tableData, this.districtDataList, this.stateName}) {
     List<DistrictData> finalData = districtDataList
         .where((element) =>
             element.stateName.toLowerCase() == stateName.toLowerCase())
@@ -102,11 +96,11 @@ class DistrictList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      key: UniqueKey(),
       children: <Widget>[
         HeaderText(
           tableData: tableData,
           stateName: stateName,
-          notifier: notifier,
           districtDataList: districtDataList,
           visibleDistrict: true,
         ),
@@ -140,7 +134,6 @@ class WidgetParent extends AnimatedWidget {
             StateList(
               tableData: tableData,
               districtDataList: districtDataList,
-              notifier: notifier,
             ));
   }
 }
@@ -151,27 +144,20 @@ class HeaderText extends StatelessWidget {
   final List<TableData> tableData;
   final List<DistrictData> districtDataList;
 
-  final ValueNotifier<Widget> notifier;
-
   HeaderText(
       {this.tableData,
       this.districtDataList,
       this.stateName,
-      this.notifier,
       this.visibleDistrict});
 
   @override
   Widget build(BuildContext context) {
+    final ScreenBloc screenBloc = Provider.of<ScreenBloc>(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
       child: GestureDetector(
         onTap: () {
-          if (visibleDistrict)
-            notifier.value = StateList(
-              tableData: tableData,
-              districtDataList: districtDataList,
-              notifier: notifier,
-            );
+          screenBloc.setForDistrict(1, "");
         },
         child: Column(
           children: <Widget>[
@@ -222,33 +208,34 @@ class HeaderText extends StatelessWidget {
   }
 }
 
-//class WidgetSwitcher extends StatefulWidget {
-//  final notifier = true;
-//  final List<TableData> tableData;
-//  final List<DistrictData> districtDataList;
-//
-//
-//  WidgetSwitcher({this.tableData, this.districtDataList});
-//
-//  @override
-//  _WidgetSwitcherState createState() => _WidgetSwitcherState();
-//}
-//
-//class _WidgetSwitcherState extends State<WidgetSwitcher> {
-//  @override
-//  Widget build(BuildContext context) {
-//    return Center(
-//      child: AnimatedSwitcher(
-//          child: widget.notifier ? StateList(
-//            tableData: widget.tableData,
-//            districtDataList: widget.districtDataList,
-//            notifier: widget.notifier,
-//          ) : DistrictList(
-//            tableData: widget.tableData,
-//            districtDataList: widget.districtDataList,
-//            notifier: widget.notifier,
-//          )
-//      ),
-//    );
-//  }
-//}
+class WidgetSwitcher extends StatefulWidget {
+  final List<TableData> tableData;
+  final List<DistrictData> districtDataList;
+
+  WidgetSwitcher({this.tableData, this.districtDataList});
+
+  @override
+  _WidgetSwitcherState createState() => _WidgetSwitcherState();
+}
+
+class _WidgetSwitcherState extends State<WidgetSwitcher> {
+  @override
+  Widget build(BuildContext context) {
+    final ScreenBloc screenBloc = Provider.of<ScreenBloc>(context);
+
+    return Center(
+      child: AnimatedSwitcher(
+          duration: Duration(milliseconds: 1000),
+          child: screenBloc.screen == 1
+              ? StateList(
+                  tableData: widget.tableData,
+                  districtDataList: widget.districtDataList,
+                )
+              : DistrictList(
+                  tableData: widget.tableData,
+                  districtDataList: widget.districtDataList,
+                  stateName: screenBloc.stateName,
+                )),
+    );
+  }
+}
