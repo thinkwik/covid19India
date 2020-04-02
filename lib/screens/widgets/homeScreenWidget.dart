@@ -1,11 +1,10 @@
 import 'package:covid19app/items/statesItem.dart';
-import 'package:covid19app/model/districtData.dart';
 import 'package:covid19app/model/screenSwitcher.dart';
 import 'package:covid19app/model/tableData.dart';
+import 'package:covid19app/screens/widgets/listHeaderWidget.dart';
 import 'package:covid19app/screens/widgets/populateDataList.dart';
 import 'package:covid19app/utils/str.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 Widget headerInfo(
     bool _visible,
@@ -17,7 +16,8 @@ Widget headerInfo(
     int recovered,
     int recoveredDelta,
     int death,
-    int deathDelta) {
+    int deathDelta,
+    ScreenBloc screenBloc) {
   return Column(
     children: <Widget>[
       Padding(
@@ -192,7 +192,6 @@ Widget headerInfo(
         duration: Duration(milliseconds: 200),
         child: Container(
           width: double.infinity,
-          height: 25.0,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
@@ -201,8 +200,12 @@ Widget headerInfo(
                 bottomLeft: Radius.zero,
                 bottomRight: Radius.zero),
           ),
-          child: SizedBox(
-            height: 25.0,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 12.0),
+            child: ListHeaderWidget(
+              stateName: screenBloc.stateName,
+              visibleDistrict: screenBloc.visibleDistrict,
+            ),
           ),
         ),
       )
@@ -213,14 +216,7 @@ Widget headerInfo(
 Widget listView(
   bool _visible,
   List<TableData> tableData,
-  List<DistrictData> districtDataList,
 ) {
-
-  tableData.sort((a,b){
-    return int.parse(b.confirmed).compareTo(int.parse(a.confirmed));
-  });
-  tableData.removeAt(0);
-
   return ListView(
     children: <Widget>[
       AnimatedOpacity(
@@ -236,12 +232,8 @@ Widget listView(
                 SizedBox(
                   height: 10.0,
                 ),
-                ChangeNotifierProvider(
-                  create: (context) => ScreenBloc(),
-                  child: WidgetSwitcher(
-                    tableData: tableData,
-                    districtDataList: districtDataList,
-                  ),
+                WidgetSwitcher(
+                  tableData: tableData,
                 )
               ],
             ),

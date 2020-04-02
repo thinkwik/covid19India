@@ -1,3 +1,4 @@
+import 'package:covid19app/model/districtData.dart';
 import 'package:covid19app/model/stateDelta.dart';
 import 'package:covid19app/model/tableData.dart';
 import 'package:covid19app/utils/str.dart';
@@ -265,16 +266,14 @@ class TableRowsGenerator extends StatelessWidget {
 }
 
 class DistrictTableRowsGenerator extends StatelessWidget {
-  final TableData tableData;
+  final DData dDate;
   double genFontSize = 12.0;
   int index;
   Color myColor = Colors.grey[200];
   FontWeight genFontWeight = FontWeight.w500;
   int lastIndex;
-  StateDelta stateDelta;
 
-  DistrictTableRowsGenerator(
-      {this.tableData, this.index, this.lastIndex, this.stateDelta}) {
+  DistrictTableRowsGenerator({this.dDate, this.index, this.lastIndex}) {
     myColor = (index % 2) == 0 ? Colors.grey[50] : Colors.grey[200];
     if ((lastIndex - 1) == index) {
       genFontWeight = FontWeight.bold;
@@ -299,7 +298,7 @@ class DistrictTableRowsGenerator extends StatelessWidget {
               Row(children: <Widget>[
                 TableDistrictItems(
                   bgColor: Colors.black,
-                  title: tableData.stateName,
+                  title: dDate.districtName,
                   data: "",
                   myFontSize: genFontSize + 2,
                   myFontWeight: FontWeight.bold,
@@ -311,10 +310,10 @@ class DistrictTableRowsGenerator extends StatelessWidget {
                   myFlex: 2,
                   bgColor: Colors.red,
                   title: "${STR.CONFIRMED}: ",
-                  data: tableData.confirmed,
+                  data: dDate.confirmed,
                   myFontSize: genFontSize + 2,
                   myFontWeight: genFontWeight,
-                  delta: stateDelta.confirmed,
+                  delta: 0,
                   isStateName: false,
                 ),
               ]),

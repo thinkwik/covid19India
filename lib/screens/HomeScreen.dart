@@ -1,4 +1,4 @@
-import 'package:covid19app/model/districtData.dart';
+import 'package:covid19app/model/screenSwitcher.dart';
 import 'package:covid19app/model/tableData.dart';
 import 'package:covid19app/network/api.dart';
 import 'package:covid19app/screens/widgets/homeScreenWidget.dart';
@@ -6,6 +6,7 @@ import 'package:covid19app/utils/commons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 extension IndexedIterable<E> on Iterable<E> {
   Iterable<T> mapIndexed<T>(T f(E e, int i)) {
@@ -35,14 +36,13 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   String filterState = "";
 
   bool _visible = false;
-  bool _visibleDistrict = false;
+  ScreenBloc screenBloc;
 
   TextStyle commonStyleHeader =
       TextStyle(fontSize: 14, fontWeight: FontWeight.w900);
   TextStyle commonStyle = TextStyle(fontSize: 24, fontWeight: FontWeight.w400);
 
   List<TableData> tableData = List();
-  List<DistrictData> districtDataList = List();
 
   void getAllData() {
     setState(() {
@@ -85,11 +85,12 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         tableData.add(total);
 
         _visible = true;
+        screenBloc.setFilterTableData(tableData);
+        screenBloc.setTableData(tableData);
       });
-    });
-
-    Network().getStateDetailedData().then((value) {
-      districtDataList = value;
+      Network().getStateDetailedData().then((value) {
+        screenBloc.setProcessedData(value);
+      });
     });
   }
 
@@ -115,6 +116,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+    screenBloc = Provider.of<ScreenBloc>(context);
+
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: HEX.primaryColor));
 
@@ -141,9 +144,9 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           child: Column(
             children: <Widget>[
               headerInfo(_visible, timePlaceholder, total, totalDelta, active,
-                  activeDelta, recovered, recoveredDelta, death, deathDelta),
+                  activeDelta, recovered, recoveredDelta, death, deathDelta, screenBloc),
               Expanded(
-                child: listView(_visible, tableData, districtDataList),
+                child: listView(_visible, screenBloc.filterTableData),
               )
             ],
           ),

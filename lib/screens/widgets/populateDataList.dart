@@ -1,7 +1,6 @@
 import 'package:covid19app/items/tableItems.dart';
 import 'package:covid19app/model/districtData.dart';
 import 'package:covid19app/model/screenSwitcher.dart';
-import 'package:covid19app/model/stateDelta.dart';
 import 'package:covid19app/model/tableData.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,9 +15,8 @@ extension IndexedIterable<E> on Iterable<E> {
 
 class StateList extends StatelessWidget {
   final List<TableData> tableData;
-  final List<DistrictData> districtDataList;
 
-  StateList({this.tableData, this.districtDataList});
+  StateList({this.tableData});
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +25,6 @@ class StateList extends StatelessWidget {
     return Column(
       key: UniqueKey(),
       children: <Widget>[
-        HeaderText(
-          tableData: tableData,
-          stateName: "",
-          districtDataList: districtDataList,
-          visibleDistrict: false,
-        ),
         Column(
           children: tableData
               .mapIndexed((value, index) => TableRowsGenerator(
@@ -41,7 +33,7 @@ class StateList extends StatelessWidget {
                     lastIndex: tableData.length,
                     stateDelta: value.stateDelta,
                     onSelect: () {
-                      screenBloc.setForDistrict(2, value.stateName);
+                      screenBloc.setForDistrict(2, value.stateName, true);
                     },
                   ))
               .toList(),
@@ -51,46 +43,25 @@ class StateList extends StatelessWidget {
   }
 }
 
-// ignore: must_be_immutable
 class DistrictList extends StatelessWidget {
-  final List<TableData> tableData;
   final List<DistrictData> districtDataList;
+  List<DData> dDataList = List();
   final String stateName;
 
-  List<TableData> tableDataList = List();
-
-  DistrictList({this.tableData, this.districtDataList, this.stateName}) {
-    List<DistrictData> finalData = districtDataList
+  DistrictList({this.districtDataList, this.stateName}) {
+    List<DistrictData> tempList = districtDataList
         .where((element) =>
             element.stateName.toLowerCase() == stateName.toLowerCase())
         .toList();
 
-    TableData myTableData = tableData
-        .where((element) =>
-            element.stateName.toLowerCase() == stateName.toLowerCase())
-        .first;
-
-    StateDelta delta =
-        StateDelta(active: 0, confirmed: 0, deaths: 0, recovered: 0);
-
-    finalData.forEach((element) {
-      element.dDataList.forEach((element) {
-        tableDataList.add(TableData(
-            stateName: element.districtName,
-            confirmed: element.confirmed,
-            active: "0",
-            recovered: "0",
-            deceases: "0",
-            stateDelta: delta));
+    int total = 0;
+    if (tempList.length > 0) {
+      dDataList = tempList.first.dDataList;
+      dDataList.forEach((element) {
+        total += int.parse(element.confirmed);
       });
-    });
-    tableDataList.add(TableData(
-        stateName: "Total",
-        confirmed: myTableData.confirmed,
-        active: "0",
-        recovered: "0",
-        deceases: "0",
-        stateDelta: delta));
+    }
+    dDataList.add(DData(confirmed: total.toString(), districtName: "Total"));
   }
 
   @override
@@ -98,19 +69,12 @@ class DistrictList extends StatelessWidget {
     return Column(
       key: UniqueKey(),
       children: <Widget>[
-        HeaderText(
-          tableData: tableData,
-          stateName: stateName,
-          districtDataList: districtDataList,
-          visibleDistrict: true,
-        ),
         Column(
-          children: tableDataList
+          children: dDataList
               .mapIndexed((value, index) => DistrictTableRowsGenerator(
-                    tableData: value,
+                    dDate: value,
                     index: index,
-                    lastIndex: tableDataList.length,
-                    stateDelta: value.stateDelta,
+                    lastIndex: dDataList.length,
                   ))
               .toList(),
         ),
@@ -119,100 +83,10 @@ class DistrictList extends StatelessWidget {
   }
 }
 
-class WidgetParent extends AnimatedWidget {
-  final List<TableData> tableData;
-  final List<DistrictData> districtDataList;
-
-  WidgetParent({this.tableData, this.districtDataList})
-      : super(listenable: ValueNotifier<Widget>(null));
-
-  ValueNotifier<Widget> get notifier => listenable as ValueNotifier<Widget>;
-
-  Widget build(BuildContext context) {
-    return new Center(
-        child: notifier.value ??
-            StateList(
-              tableData: tableData,
-              districtDataList: districtDataList,
-            ));
-  }
-}
-
-class HeaderText extends StatelessWidget {
-  final String stateName;
-  final bool visibleDistrict;
-  final List<TableData> tableData;
-  final List<DistrictData> districtDataList;
-
-  HeaderText(
-      {this.tableData,
-      this.districtDataList,
-      this.stateName,
-      this.visibleDistrict});
-
-  @override
-  Widget build(BuildContext context) {
-    final ScreenBloc screenBloc = Provider.of<ScreenBloc>(context);
-    return Container(
-      padding: const EdgeInsets.fromLTRB(0, 0, 0, 4),
-      child: GestureDetector(
-        onTap: () {
-          screenBloc.setForDistrict(1, "");
-        },
-        child: Column(
-          children: <Widget>[
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Visibility(
-                    visible: visibleDistrict,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 05, 0),
-                      child: Container(
-                        child: Icon(
-                          Icons.arrow_back,
-                          size: 24.0,
-                        ),
-                      ),
-                    )),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                        visibleDistrict
-                            ? "District Wise Cases"
-                            : "State Wise Cases",
-                        style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.normal,
-                            color: Colors.black)),
-                    Visibility(
-                      visible: visibleDistrict,
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                        child: Text(stateName,
-                            style: TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.blueAccent)),
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class WidgetSwitcher extends StatefulWidget {
   final List<TableData> tableData;
-  final List<DistrictData> districtDataList;
 
-  WidgetSwitcher({this.tableData, this.districtDataList});
+  WidgetSwitcher({this.tableData});
 
   @override
   _WidgetSwitcherState createState() => _WidgetSwitcherState();
@@ -225,15 +99,13 @@ class _WidgetSwitcherState extends State<WidgetSwitcher> {
 
     return Center(
       child: AnimatedSwitcher(
-          duration: Duration(milliseconds: 1000),
+          duration: Duration(milliseconds: 200),
           child: screenBloc.screen == 1
               ? StateList(
                   tableData: widget.tableData,
-                  districtDataList: widget.districtDataList,
                 )
               : DistrictList(
-                  tableData: widget.tableData,
-                  districtDataList: widget.districtDataList,
+                  districtDataList: screenBloc.districtDataList,
                   stateName: screenBloc.stateName,
                 )),
     );

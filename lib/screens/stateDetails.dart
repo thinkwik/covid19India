@@ -186,10 +186,8 @@ class _StateWiseDetailState extends State<StateWiseDetail>
                         Column(
                           children: tableDataList.mapIndexed((value, index) =>
                               DistrictTableRowsGenerator(
-                                  tableData: value,
                                   index: index,
-                                  lastIndex: tableDataList.length,
-                                  stateDelta: value.stateDelta))
+                                  lastIndex: tableDataList.length,))
                               .toList(),
                         ),
                       ],
