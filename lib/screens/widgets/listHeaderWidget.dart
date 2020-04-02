@@ -27,6 +27,9 @@ class _ListHeaderWidgetState extends State<ListHeaderWidget> {
       child: GestureDetector(
         onTap: () {
           screenBloc.setForDistrict(1, "", false);
+          searchEnabled = false;
+          screenBloc.setFilterTableData(
+              screenBloc.tableData);
         },
         child: Column(
           children: <Widget>[
@@ -166,7 +169,7 @@ class _ListHeaderWidgetState extends State<ListHeaderWidget> {
                   ),
                 ),
                 Visibility(
-                  visible: !searchEnabled && !widget.visibleDistrict,
+                  visible: !searchEnabled && !widget.visibleDistrict && false,
                   child: Expanded(
                     flex: 0,
                     child: Padding(

@@ -1,3 +1,4 @@
+import 'package:covid19app/charts/simpleLineChart.dart';
 import 'package:covid19app/model/screenSwitcher.dart';
 import 'package:covid19app/model/tableData.dart';
 import 'package:covid19app/network/api.dart';
@@ -143,10 +144,25 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           color: HEX.primaryColor,
           child: Column(
             children: <Widget>[
-              headerInfo(_visible, timePlaceholder, total, totalDelta, active,
-                  activeDelta, recovered, recoveredDelta, death, deathDelta, screenBloc),
+              headerInfo(
+                  _visible,
+                  timePlaceholder,
+                  total,
+                  totalDelta,
+                  active,
+                  activeDelta,
+                  recovered,
+                  recoveredDelta,
+                  death,
+                  deathDelta,
+                  screenBloc),
               Expanded(
-                child: listView(_visible, screenBloc.filterTableData),
+                child: Container(
+                    color: _visible
+                        ? Colors.white
+                        : HEX.primaryColor,
+                    child: listView(_visible, screenBloc.filterTableData)),
+//              child: Container(color: Colors.white,child: DateTimeComboLinePointChart.withSampleData()),
               )
             ],
           ),

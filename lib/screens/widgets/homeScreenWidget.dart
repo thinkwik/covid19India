@@ -112,6 +112,7 @@ Widget headerInfo(
                           width: 20.0,
                         ),
                         Material(
+                          elevation: 0,
                           color: Colors.transparent,
                           shape: RoundedRectangleBorder(
                               side: BorderSide(color: Colors.grey),
@@ -119,7 +120,7 @@ Widget headerInfo(
                           child: Padding(
                             padding: const EdgeInsets.all(6.0),
                             child: Icon(
-                              Icons.graphic_eq,
+                              Icons.show_chart,
                               color: Colors.grey,
                               size: 20,
                             ),
@@ -222,21 +223,18 @@ Widget listView(
       AnimatedOpacity(
         opacity: _visible ? 1.0 : 0.0,
         duration: Duration(milliseconds: 200),
-        child: Container(
-          color: Colors.white,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 116.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(
-                  height: 10.0,
-                ),
-                WidgetSwitcher(
-                  tableData: tableData,
-                )
-              ],
-            ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 116.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(
+                height: 10.0,
+              ),
+              WidgetSwitcher(
+                tableData: tableData,
+              )
+            ],
           ),
         ),
       ),

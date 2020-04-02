@@ -53,8 +53,8 @@ class Network {
     List<StateData> statewise = List();
 
     data["statewise"].forEach((element) {
-      logv(" StateName == ${element["state"]}");
-      logv(" StateName Delta == ${element["delta"]}");
+//      logv(" StateName == ${element["state"]}");
+//      logv(" StateName Delta == ${element["delta"]}");
 
       StateDelta myDelta = StateDelta(
         active: element["delta"]["active"],
@@ -83,20 +83,18 @@ class Network {
     List<DistrictData> districtDataList = List();
 
     data.forEach((stateName, value) {
-
       List<DData> dDataList = List();
 
       Map stateDataMap = Map.from(value["districtData"]);
 
       stateDataMap.forEach((districtName, value) {
-        dDataList.add(
-            DData(districtName: districtName, confirmed: value["confirmed"].toString()));
+        dDataList.add(DData(
+            districtName: districtName,
+            confirmed: value["confirmed"].toString()));
       });
 
-      districtDataList.add(DistrictData(
-          stateName: stateName,
-          dDataList: dDataList
-      ));
+      districtDataList
+          .add(DistrictData(stateName: stateName, dDataList: dDataList));
     });
 
     return districtDataList;
