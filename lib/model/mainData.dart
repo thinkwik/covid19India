@@ -10,6 +10,7 @@ class MainData {
   int deceasedDelta = 0;
 
   String lastupdatedtime = "";
+  dynamic casesTimeSeries;
 
   MainData(
       {this.confirmed,
@@ -20,5 +21,6 @@ class MainData {
       this.activeDelta,
       this.recoveredDelta,
       this.deceasedDelta,
-      this.lastupdatedtime});
+      this.lastupdatedtime,
+      this.casesTimeSeries});
 }

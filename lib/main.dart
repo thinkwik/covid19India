@@ -16,8 +16,11 @@ void main() {
     ),
     initialRoute: "/",
     routes: {
-      "/": (context) => ChangeNotifierProvider(
-          create: (context) => ScreenBloc(), child: HomeScreen()),
+      "/": (context) => MultiProvider(providers: [
+            ChangeNotifierProvider<ScreenBloc>(create: (_) => ScreenBloc()),
+            ChangeNotifierProvider<ChartBloc>(create: (_) => ChartBloc()),
+            ChangeNotifierProvider<ChartUpdateBloc>(create: (_) => ChartUpdateBloc()),
+          ], child: HomeScreen()),
       "/home": (context) => HomeScreen(),
       "/details": (context) => StateWiseDetail()
     },

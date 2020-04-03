@@ -1,12 +1,15 @@
 import 'package:covid19app/charts/simpleLineChart.dart';
+import 'package:covid19app/items/statesItem.dart';
 import 'package:covid19app/model/screenSwitcher.dart';
 import 'package:covid19app/model/tableData.dart';
 import 'package:covid19app/network/api.dart';
 import 'package:covid19app/screens/widgets/homeScreenWidget.dart';
 import 'package:covid19app/utils/commons.dart';
+import 'package:covid19app/utils/str.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 extension IndexedIterable<E> on Iterable<E> {
@@ -38,6 +41,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   bool _visible = false;
   ScreenBloc screenBloc;
+  TabBloc tabBloc;
+  ChartBloc chartBloc;
 
   TextStyle commonStyleHeader =
       TextStyle(fontSize: 14, fontWeight: FontWeight.w900);
@@ -65,6 +70,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         lastUpdateTime = value.lastupdatedtime;
 
         timePlaceholder = "$lastUpdateTime";
+
+//        logv("Main data loaded ==${value.casesTimeSeries}");
+        Network().getChartData(value).then((chartValue) {
+          chartBloc.setChartData(chartValue);
+        });
       });
     });
 
@@ -89,9 +99,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         screenBloc.setFilterTableData(tableData);
         screenBloc.setTableData(tableData);
       });
-      Network().getStateDetailedData().then((value) {
-        screenBloc.setProcessedData(value);
-      });
+    });
+
+    Network().getStateDetailedData().then((value) {
+      screenBloc.setProcessedData(value);
     });
   }
 
@@ -118,6 +129,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     screenBloc = Provider.of<ScreenBloc>(context);
+    chartBloc = Provider.of<ChartBloc>(context);
 
     SystemChrome.setSystemUIOverlayStyle(
         SystemUiOverlayStyle(statusBarColor: HEX.primaryColor));
@@ -139,31 +151,116 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         splashColor: Colors.white,
       ),
       body: Center(
-        child: Container(
-          width: 480.0,
-          color: HEX.primaryColor,
+        child: ChangeNotifierProvider(
+          create: (context) => TabBloc(),
+          child: Container(
+            width: 480.0,
+            color: HEX.primaryColor,
+            child: Column(
+              children: <Widget>[
+                HeaderInfo(_visible, timePlaceholder, total, totalDelta, active,
+                    activeDelta, recovered, recoveredDelta, death, deathDelta),
+                Expanded(
+                  child: Container(
+                    color: _visible ? Colors.white : HEX.primaryColor,
+                    child: MainScreenSwitcher(_visible, screenBloc, chartBloc),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class MainScreenSwitcher extends StatefulWidget {
+  final bool visible;
+  final ScreenBloc screenBloc;
+  final ChartBloc chartBloc;
+
+  MainScreenSwitcher(this.visible, this.screenBloc, this.chartBloc);
+
+  @override
+  _MainScreenSwitcherState createState() => _MainScreenSwitcherState();
+}
+
+class _MainScreenSwitcherState extends State<MainScreenSwitcher> {
+  @override
+  Widget build(BuildContext context) {
+    TabBloc tabBloc = Provider.of<TabBloc>(context);
+
+    logv("tabBloc.tab == ${tabBloc.tab}");
+
+    return Container(
+      width: double.infinity,
+      child: AnimatedSwitcher(
+          duration: Duration(milliseconds: 200),
+          child: tabBloc.tab == 0
+              ? listView(widget.visible, widget.screenBloc.filterTableData)
+              : tabBloc.tab == 2
+                  ? Column(
+                      children: <Widget>[
+                        Container(
+                            height: 350, child: DateTimeComboLinePointChart()),
+                        ChartDatCard()
+                      ],
+                    )
+                  : Text("Coming soon")),
+    );
+  }
+}
+
+class ChartDatCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    ChartUpdateBloc chartUpdateBloc = Provider.of<ChartUpdateBloc>(context);
+    ChartBloc chartBloc = Provider.of<ChartBloc>(context);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      child: Card(
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              headerInfo(
-                  _visible,
-                  timePlaceholder,
-                  total,
-                  totalDelta,
-                  active,
-                  activeDelta,
-                  recovered,
-                  recoveredDelta,
-                  death,
-                  deathDelta,
-                  screenBloc),
-              Expanded(
-                child: Container(
-                    color: _visible
-                        ? Colors.white
-                        : HEX.primaryColor,
-                    child: listView(_visible, screenBloc.filterTableData)),
-//              child: Container(color: Colors.white,child: DateTimeComboLinePointChart.withSampleData()),
-              )
+              Text(
+                "${DateFormat('dd MMM, dd').format(chartBloc.chartData.confirmedData[chartUpdateBloc.index].time)}",
+                style: TextStyle(
+                    color: Colors.grey[800],
+                    letterSpacing: 1.0,
+                    fontSize: 18.0),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                children: <Widget>[
+                  GraphDataItem(
+                      myImage: "ic_confirmed",
+                      title: STR.CONFIRMED,
+                      myColor: Colors.red,
+                      total: chartBloc.chartData.confirmedData[chartUpdateBloc.index].count),
+                  GraphDataItem(
+                      myImage: "ic_active",
+                      title: STR.ACTIVE,
+                      myColor: Colors.green,
+                      total: chartBloc.chartData.recoveredData[chartUpdateBloc.index].count),
+//                  GraphDataItem(
+//                      myImage: "ic_recovered",
+//                      title: STR.RECOVERED,
+//                      myColor: Colors.pinkAccent,
+//                      total: 90),
+                  GraphDataItem(
+                      myImage: "ic_rip",
+                      title: STR.DECEASED,
+                      myColor: Colors.grey,
+                      total: chartBloc.chartData.deathData[chartUpdateBloc.index].count),
+                ],
+              ),
             ],
           ),
         ),

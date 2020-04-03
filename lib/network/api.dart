@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:covid19app/charts/simpleLineChart.dart';
 import 'package:covid19app/model/StateData.dart';
 import 'package:covid19app/model/districtData.dart';
 import 'package:covid19app/model/mainData.dart';
 import 'package:covid19app/model/stateDelta.dart';
-import 'package:covid19app/model/tableData.dart';
 import 'package:covid19app/utils/commons.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
@@ -26,6 +26,7 @@ class Network {
     Map data = jsonDecode(response.body);
     dynamic statewise = data["statewise"][0];
     dynamic keyValues = data["key_values"][0];
+    dynamic casesTimeSeries = data["cases_time_series"];
     String lastupdatedtime = keyValues["lastupdatedtime"];
 
     DateFormat inputFormat = DateFormat("dd/MM/yyyy HH:mm:ss");
@@ -42,7 +43,8 @@ class Network {
         confirmedDelta: int.parse(keyValues["confirmeddelta"]),
         deceasedDelta: int.parse(keyValues["deceaseddelta"]),
         recoveredDelta: int.parse(keyValues["recovereddelta"]),
-        lastupdatedtime: dateInString);
+        lastupdatedtime: dateInString,
+        casesTimeSeries: casesTimeSeries);
 
     return mainData;
   }
@@ -98,5 +100,37 @@ class Network {
     });
 
     return districtDataList;
+  }
+
+  Future<ChartData> getChartData(MainData mainData) async {
+    DateFormat inputFormat = DateFormat("dd MMMM yyyy");
+    List<TimeSeriesData> confirmed = List();
+    List<TimeSeriesData> recovered = List();
+    List<TimeSeriesData> death = List();
+
+    mainData.casesTimeSeries.forEach((value) {
+//      logv("value == $value");
+      String date = value["date"] + "2020";
+//      logv("date == $date");
+      String day = DateFormat("dd").format(inputFormat.parse(date));
+      String month = DateFormat("MM").format(inputFormat.parse(date));
+      String year = "2020";
+//      logv("date STR == $day/$month/$year");
+
+      confirmed.add(TimeSeriesData(
+          time: DateTime(int.parse(year), int.parse(month), int.parse(day)),
+          count: int.parse(value["totalconfirmed"])));
+      recovered.add(TimeSeriesData(
+          time: DateTime(int.parse(year), int.parse(month), int.parse(day)),
+          count: int.parse(value["totalrecovered"])));
+      death.add(TimeSeriesData(
+          time: DateTime(int.parse(year), int.parse(month), int.parse(day)),
+          count: int.parse(value["totaldeceased"])));
+    });
+
+    ChartData chartData = ChartData(
+        confirmedData: confirmed, deathData: death, recoveredData: recovered);
+
+    return chartData;
   }
 }

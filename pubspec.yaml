@@ -35,6 +35,7 @@ dependencies:
   country_icons: ^1.1.1
   provider: ^4.0.1
   map: ^0.1.0+1
+  pwa: ^0.2.0
 
 dev_dependencies:
   flutter_test:
