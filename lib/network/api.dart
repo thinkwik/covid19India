@@ -8,6 +8,8 @@ import 'package:covid19app/model/stateDelta.dart';
 import 'package:covid19app/utils/commons.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:webfeed/domain/rss_feed.dart';
+import 'package:webfeed/domain/rss_item.dart';
 
 class API {
   static final String _BASE_URL = "https://api.covid19india.org";
@@ -16,6 +18,8 @@ class API {
 
   final String getData = "$_BASE_URL/$_DATA";
   final String getStateDistrictWise = "$_BASE_URL/$_STATE_DISTRICT";
+  final String getNewsApi =
+      "https://news.google.com/rss/search?q=covid19&hl=en-IN&gl=IN&ceid=IN:en";
 }
 
 class Network {
@@ -24,10 +28,10 @@ class Network {
   Future<MainData> getAllData() async {
     Response response = await get(_api.getData);
     Map data = jsonDecode(response.body);
+    dynamic statewiseAll = data["statewise"];
     dynamic statewise = data["statewise"][0];
-    dynamic keyValues = data["key_values"][0];
     dynamic casesTimeSeries = data["cases_time_series"];
-    String lastupdatedtime = keyValues["lastupdatedtime"];
+    String lastupdatedtime = statewise["lastupdatedtime"];
 
     DateFormat inputFormat = DateFormat("dd/MM/yyyy HH:mm:ss");
     DateTime dateTime = inputFormat.parse(lastupdatedtime);
@@ -40,29 +44,28 @@ class Network {
         deceased: int.parse(statewise["deaths"]),
         recovered: int.parse(statewise["recovered"]),
         activeDelta: 0,
-        confirmedDelta: int.parse(keyValues["confirmeddelta"]),
-        deceasedDelta: int.parse(keyValues["deceaseddelta"]),
-        recoveredDelta: int.parse(keyValues["recovereddelta"]),
+        confirmedDelta: int.parse(statewise["deltaconfirmed"]),
+        deceasedDelta: int.parse(statewise["deltadeaths"]),
+        recoveredDelta: int.parse(statewise["deltarecovered"]),
         lastupdatedtime: dateInString,
-        casesTimeSeries: casesTimeSeries);
+        casesTimeSeries: casesTimeSeries,
+        statewiseAll: statewiseAll);
 
     return mainData;
   }
 
-  Future<List<StateData>> getStateDataList() async {
-    Response response = await get(_api.getData);
-    Map data = jsonDecode(response.body);
+  Future<List<StateData>> getStateDataList(dynamic statewiseAll) async {
+//    Map data = jsonDecode(response.body);
     List<StateData> statewise = List();
 
-    data["statewise"].forEach((element) {
-//      logv(" StateName == ${element["state"]}");
-//      logv(" StateName Delta == ${element["delta"]}");
+    statewiseAll.forEach((element) {
+      logv(" StateName == $element");
 
       StateDelta myDelta = StateDelta(
-        active: element["delta"]["active"],
-        confirmed: element["delta"]["confirmed"],
-        deaths: element["delta"]["deaths"],
-        recovered: element["delta"]["recovered"],
+        active: 0,
+        confirmed: int.parse(element["deltaconfirmed"]),
+        deaths: int.parse(element["deltadeaths"]),
+        recovered: int.parse(element["deltarecovered"]),
       );
 
       statewise.add(StateData(
@@ -92,7 +95,8 @@ class Network {
       stateDataMap.forEach((districtName, value) {
         dDataList.add(DData(
             districtName: districtName,
-            confirmed: value["confirmed"].toString()));
+            confirmed: value["confirmed"].toString(),
+            delta: value["delta"]["confirmed"].toString()));
       });
 
       districtDataList
@@ -102,7 +106,7 @@ class Network {
     return districtDataList;
   }
 
-  Future<ChartData> getChartData(MainData mainData) async {
+  Future<ChartDataModel> getChartData(MainData mainData) async {
     DateFormat inputFormat = DateFormat("dd MMMM yyyy");
     List<TimeSeriesData> confirmed = List();
     List<TimeSeriesData> recovered = List();
@@ -128,9 +132,15 @@ class Network {
           count: int.parse(value["totaldeceased"])));
     });
 
-    ChartData chartData = ChartData(
+    ChartDataModel chartData = ChartDataModel(
         confirmedData: confirmed, deathData: death, recoveredData: recovered);
 
     return chartData;
+  }
+
+  Future<List<RssItem>> getNews() async {
+    Response response = await get(_api.getNewsApi);
+    var feed = new RssFeed.parse(response.body);
+    return feed.items;
   }
 }

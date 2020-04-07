@@ -61,7 +61,7 @@ class DistrictList extends StatelessWidget {
         total += int.parse(element.confirmed);
       });
     }
-    dDataList.add(DData(confirmed: total.toString(), districtName: "Total"));
+    dDataList.add(DData(confirmed: total.toString(), districtName: "Total", delta: "0"));
   }
 
   @override

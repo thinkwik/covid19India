@@ -36,6 +36,11 @@ dependencies:
   provider: ^4.0.1
   map: ^0.1.0+1
   pwa: ^0.2.0
+  mp_chart: ^0.1.9
+  transparent_image: ^1.0.0
+  timeago: ^2.0.26
+  webfeed: ^0.4.2
+  flutter_native_web: ^1.0.3
 
 dev_dependencies:
   flutter_test:

@@ -65,25 +65,25 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       });
     });
 
-    Network().getStateDataList().then((value) {
-      setState(() {
-        tableData.clear();
-        value.forEach((element) {
-          tableData.add(TableData(
-              stateName: element.state,
-              confirmed: element.confirmed,
-              active: element.active,
-              recovered: element.recovered,
-              deceases: element.deaths,
-              stateDelta: element.delta));
-        });
-
-        TableData total = tableData[0];
-        tableData.removeAt(0);
-        tableData.add(total);
-        _visible = true;
-      });
-    });
+//    Network().getStateDataList().then((value) {
+//      setState(() {
+//        tableData.clear();
+//        value.forEach((element) {
+//          tableData.add(TableData(
+//              stateName: element.state,
+//              confirmed: element.confirmed,
+//              active: element.active,
+//              recovered: element.recovered,
+//              deceases: element.deaths,
+//              stateDelta: element.delta));
+//        });
+//
+//        TableData total = tableData[0];
+//        tableData.removeAt(0);
+//        tableData.add(total);
+//        _visible = true;
+//      });
+//    });
   }
 
   @override
@@ -108,75 +108,64 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          getAllData();
-        },
-        child: Icon(Icons.refresh),
-        backgroundColor: Colors.grey[800],
-        splashColor: Colors.white,
-      ),
-      body: SafeArea(
-        child: Center(
-          child: Container(
-            width: 480,
-            child: ListView(
-              children: <Widget>[
-                Visibility(
-                  visible: false,
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: Container(
-                      color: Colors.amber[100],
-                      child: Padding(
-                        padding: const EdgeInsets.all(30.0),
-                        child: Center(
-                          child: Text(
-                            "Banner",
-                            style: TextStyle(
-                                fontSize: 14.0, color: Colors.amber[600]),
-                          ),
-                        ),
-                      ),
+    return Container(
+      width: 480,
+      child: ListView(
+        children: <Widget>[
+          Visibility(
+            visible: false,
+            child: SizedBox(
+              width: double.infinity,
+              child: Container(
+                color: Colors.amber[100],
+                child: Padding(
+                  padding: const EdgeInsets.all(30.0),
+                  child: Center(
+                    child: Text(
+                      "Banner",
+                      style: TextStyle(
+                          fontSize: 14.0, color: Colors.amber[600]),
                     ),
                   ),
                 ),
-                Column(
-                  children: <Widget>[
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Text(appBarTitle,
-                        textAlign: TextAlign.end,
-                        style: TextStyle(
-                            letterSpacing: 1.0,
-                            fontSize: 12.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green[500])),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Text(STR.APP_HEADER,
-                        style: TextStyle(
-                            letterSpacing: 1.0,
-                            fontSize: 20.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[800])),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Text(STR.APP_TAGLINE,
-                        style: TextStyle(
-                            letterSpacing: 1.0,
-                            fontSize: 10.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[600])),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                  ],
-                ),
+              ),
+            ),
+          ),
+          Column(
+            children: <Widget>[
+              SizedBox(
+                height: 10.0,
+              ),
+              Text(appBarTitle,
+                  textAlign: TextAlign.end,
+                  style: TextStyle(
+                      letterSpacing: 1.0,
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green[500])),
+              SizedBox(
+                height: 10.0,
+              ),
+              Text(STR.APP_HEADER,
+                  style: TextStyle(
+                      letterSpacing: 1.0,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[800])),
+              SizedBox(
+                height: 10.0,
+              ),
+              Text(STR.APP_TAGLINE,
+                  style: TextStyle(
+                      letterSpacing: 1.0,
+                      fontSize: 10.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[600])),
+              SizedBox(
+                height: 10.0,
+              ),
+            ],
+          ),
 //                AnimatedOpacity(
 //                  opacity: _visible ? 1.0 : 0.0,
 //                  duration: Duration(milliseconds: 200),
@@ -208,9 +197,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 //                    ),
 //                  ),
 //                ),
-                SizedBox(
-                  height: 10,
-                ),
+          SizedBox(
+            height: 10,
+          ),
 //                AnimatedOpacity(
 //                  opacity: _visible ? 1.0 : 0.0,
 //                  duration: Duration(milliseconds: 200),
@@ -269,29 +258,26 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 //                    ],
 //                  ),
 //                ),
-                AnimatedOpacity(
-                  opacity: _visible ? 1.0 : 0.0,
-                  duration: Duration(milliseconds: 200),
-                  child: Column(
-                    children: tableData
-                        .mapIndexed((value, index) => TableRowsGenerator(
-                            tableData: value,
-                            index: index,
-                            lastIndex: tableData.length,
-                            stateDelta: value.stateDelta))
-                        .toList(),
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                SizedBox(
-                  height: 100,
-                ),
-              ],
+          AnimatedOpacity(
+            opacity: _visible ? 1.0 : 0.0,
+            duration: Duration(milliseconds: 200),
+            child: Column(
+              children: tableData
+                  .mapIndexed((value, index) => TableRowsGenerator(
+                  tableData: value,
+                  index: index,
+                  lastIndex: tableData.length,
+                  stateDelta: value.stateDelta))
+                  .toList(),
             ),
           ),
-        ),
+          SizedBox(
+            height: 10,
+          ),
+          SizedBox(
+            height: 100,
+          ),
+        ],
       ),
     );
   }

@@ -1,15 +1,13 @@
-import 'package:covid19app/charts/simpleLineChart.dart';
-import 'package:covid19app/items/statesItem.dart';
+import 'package:covid19app/charts/lineChartCubic.dart';
 import 'package:covid19app/model/screenSwitcher.dart';
 import 'package:covid19app/model/tableData.dart';
 import 'package:covid19app/network/api.dart';
+import 'package:covid19app/screens/webview.dart';
 import 'package:covid19app/screens/widgets/homeScreenWidget.dart';
 import 'package:covid19app/utils/commons.dart';
-import 'package:covid19app/utils/str.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 extension IndexedIterable<E> on Iterable<E> {
@@ -71,33 +69,33 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
         timePlaceholder = "$lastUpdateTime";
 
-//        logv("Main data loaded ==${value.casesTimeSeries}");
+        Network().getStateDataList(value.statewiseAll).then((value) {
+          setState(() {
+            tableData.clear();
+            value.forEach((element) {
+              tableData.add(TableData(
+                  stateName: element.state,
+                  confirmed: element.confirmed,
+                  active: element.confirmed,
+                  recovered: element.recovered,
+                  deceases: element.deaths,
+                  stateDelta: element.delta));
+            });
+
+            TableData total = tableData[0];
+            tableData.removeAt(0);
+            tableData.add(total);
+
+            _visible = true;
+            screenBloc.setFilterTableData(tableData);
+            screenBloc.setTableData(tableData);
+          });
+        });
+
+        logv("Main data loaded ==${value.casesTimeSeries}");
         Network().getChartData(value).then((chartValue) {
           chartBloc.setChartData(chartValue);
         });
-      });
-    });
-
-    Network().getStateDataList().then((value) {
-      setState(() {
-        tableData.clear();
-        value.forEach((element) {
-          tableData.add(TableData(
-              stateName: element.state,
-              confirmed: element.confirmed,
-              active: element.active,
-              recovered: element.recovered,
-              deceases: element.deaths,
-              stateDelta: element.delta));
-        });
-
-        TableData total = tableData[0];
-        tableData.removeAt(0);
-        tableData.add(total);
-
-        _visible = true;
-        screenBloc.setFilterTableData(tableData);
-        screenBloc.setTableData(tableData);
       });
     });
 
@@ -200,71 +198,14 @@ class _MainScreenSwitcherState extends State<MainScreenSwitcher> {
           child: tabBloc.tab == 0
               ? listView(widget.visible, widget.screenBloc.filterTableData)
               : tabBloc.tab == 2
-                  ? Column(
-                      children: <Widget>[
-                        Container(
-                            height: 350, child: DateTimeComboLinePointChart()),
-                        ChartDatCard()
-                      ],
+                  ? AnimatedOpacity(
+                      opacity: widget.visible ? 1.0 : 0.0,
+                      duration: Duration(milliseconds: 200),
+                      child: Container(
+                          height: 500,
+                          child: LineChartMultiple(widget.chartBloc.chartData)),
                     )
-                  : Text("Coming soon")),
-    );
-  }
-}
-
-class ChartDatCard extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    ChartUpdateBloc chartUpdateBloc = Provider.of<ChartUpdateBloc>(context);
-    ChartBloc chartBloc = Provider.of<ChartBloc>(context);
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-      child: Card(
-        color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(
-                "${DateFormat('dd MMM, dd').format(chartBloc.chartData.confirmedData[chartUpdateBloc.index].time)}",
-                style: TextStyle(
-                    color: Colors.grey[800],
-                    letterSpacing: 1.0,
-                    fontSize: 18.0),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: <Widget>[
-                  GraphDataItem(
-                      myImage: "ic_confirmed",
-                      title: STR.CONFIRMED,
-                      myColor: Colors.red,
-                      total: chartBloc.chartData.confirmedData[chartUpdateBloc.index].count),
-                  GraphDataItem(
-                      myImage: "ic_active",
-                      title: STR.ACTIVE,
-                      myColor: Colors.green,
-                      total: chartBloc.chartData.recoveredData[chartUpdateBloc.index].count),
-//                  GraphDataItem(
-//                      myImage: "ic_recovered",
-//                      title: STR.RECOVERED,
-//                      myColor: Colors.pinkAccent,
-//                      total: 90),
-                  GraphDataItem(
-                      myImage: "ic_rip",
-                      title: STR.DECEASED,
-                      myColor: Colors.grey,
-                      total: chartBloc.chartData.deathData[chartUpdateBloc.index].count),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
+                  : WebViewScreen()),
     );
   }
 }

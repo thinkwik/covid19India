@@ -11,6 +11,7 @@ class MainData {
 
   String lastupdatedtime = "";
   dynamic casesTimeSeries;
+  dynamic statewiseAll;
 
   MainData(
       {this.confirmed,
@@ -22,5 +23,6 @@ class MainData {
       this.recoveredDelta,
       this.deceasedDelta,
       this.lastupdatedtime,
-      this.casesTimeSeries});
+      this.casesTimeSeries,
+      this.statewiseAll});
 }

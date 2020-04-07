@@ -8,6 +8,7 @@ class DistrictData {
 class DData {
   String districtName;
   String confirmed;
+  String delta;
 
-  DData({this.districtName, this.confirmed});
+  DData({this.districtName, this.confirmed, this.delta});
 }

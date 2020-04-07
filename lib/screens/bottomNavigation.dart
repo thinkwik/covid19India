@@ -1,5 +1,9 @@
-import 'package:covid19app/screens/myApp.dart';
+import 'package:covid19app/model/screenSwitcher.dart';
+import 'package:covid19app/screens/HomeScreen.dart';
+import 'package:covid19app/screens/blankScreen.dart';
+import 'package:covid19app/screens/newsScreen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class NavigationScreen extends StatefulWidget {
   @override
@@ -12,14 +16,20 @@ class NavigationScreenState extends State<NavigationScreen>
 
   void _onPressed(int index) => setState(() => jumpTo(index));
 
-  List<Widget> _fragments = new List<Widget>();
+  List<Widget> _fragments = List<Widget>();
   int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    _fragments = [MyApp()];
-    controller = TabController(length: 1, vsync: this);
+    _fragments = [
+      MultiProvider(providers: [
+        ChangeNotifierProvider<ScreenBloc>(create: (_) => ScreenBloc()),
+        ChangeNotifierProvider<ChartBloc>(create: (_) => ChartBloc()),
+      ], child: HomeScreen()),
+      NewsWidget()
+    ];
+    controller = TabController(length: 2, vsync: this);
     controller.addListener(_handleTabSelection);
   }
 
@@ -38,9 +48,12 @@ class NavigationScreenState extends State<NavigationScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        child: Scaffold(
-      body: _fragments[_currentIndex],
+    return Scaffold(
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _fragments,
+      ),
+//      body: _fragments[_currentIndex],
       resizeToAvoidBottomPadding: true,
       bottomNavigationBar: Material(
         // set the color of the bottom navigation bar
@@ -49,16 +62,26 @@ class NavigationScreenState extends State<NavigationScreen>
         clipBehavior: Clip.antiAlias,
         // set the tab bar as the child of bottom navigation bar
         child: Visibility(
-          visible: false,
+          visible: true,
           child: TabBar(
             indicatorWeight: 2,
             indicatorSize: TabBarIndicatorSize.label,
+            labelColor: Colors.blue[800],
+            unselectedLabelColor: Colors.grey[300],
+            indicatorColor: Colors.transparent,
             tabs: <Tab>[
               Tab(
+                text: "Home",
                 // set icon to the tab
                 icon: Icon(
                   Icons.home,
-                  color: Colors.blue,
+                ),
+              ),
+              Tab(
+                text: "News",
+                // set icon to the tab
+                icon: Icon(
+                  Icons.network_wifi,
                 ),
               ),
             ],
@@ -67,7 +90,7 @@ class NavigationScreenState extends State<NavigationScreen>
           ),
         ),
       ),
-    ));
+    );
   }
 
   jumpTo(int position) {
