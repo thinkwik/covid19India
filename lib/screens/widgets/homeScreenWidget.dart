@@ -255,6 +255,7 @@ class _HeaderInfoState extends State<HeaderInfo> {
               child: ListHeaderWidget(
                 stateName: screenBloc.stateName,
                 visibleDistrict: screenBloc.visibleDistrict,
+                tabIndex: tabBloc.tab,
               ),
             ),
           ),

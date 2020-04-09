@@ -174,6 +174,7 @@ class LineChartMultipleState extends LineActionState<LineChartMultiple>
         pinchZoomEnabled: false,
         selectionListener: this,
         drawMarkers: true,
+        noDataText: "Loading chart data",
         drawBorders: false,
         description: desc);
   }

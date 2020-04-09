@@ -1,7 +1,5 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
+import 'package:easy_web_view/easy_web_view.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_native_web/flutter_native_web.dart';
 
 class WebViewScreen extends StatefulWidget {
   @override
@@ -9,8 +7,6 @@ class WebViewScreen extends StatefulWidget {
 }
 
 class _WebViewScreenState extends State<WebViewScreen> {
-  WebController webController;
-
   @override
   void initState() {
     super.initState();
@@ -18,29 +14,11 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-
-    FlutterNativeWeb flutterWebView = new FlutterNativeWeb(
-      onWebCreated: onWebCreated,
-      gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
-        Factory<OneSequenceGestureRecognizer>(
-              () => TapGestureRecognizer(),
-        ),
-      ].toSet(),
-    );
-
-    return  Container(
-      child: flutterWebView,
-    );
-  }
-
-  void onWebCreated(webController) {
-    this.webController = webController;
-    this.webController.loadUrl("https://jineshsoni.github.io/covid19India-Heatmap/");
-    this.webController.onPageStarted.listen((url) =>
-        print("Loading $url")
-    );
-    this.webController.onPageFinished.listen((url) =>
-        print("Finished loading $url")
+    return EasyWebView(
+      src: "https://jineshsoni.github.io/covid19India-Heatmap/",
+      isHtml: false, // Use Html syntax
+      isMarkdown: false, // Use markdown syntax
+      convertToWidets: false, // Try to convert to flutter widgets
     );
   }
 }

@@ -7,8 +7,9 @@ import 'package:provider/provider.dart';
 class ListHeaderWidget extends StatefulWidget {
   final String stateName;
   final bool visibleDistrict;
+  final int tabIndex;
 
-  ListHeaderWidget({this.stateName, this.visibleDistrict});
+  ListHeaderWidget({this.stateName, this.visibleDistrict, this.tabIndex});
 
   @override
   _ListHeaderWidgetState createState() => _ListHeaderWidgetState();
@@ -28,8 +29,7 @@ class _ListHeaderWidgetState extends State<ListHeaderWidget> {
         onTap: () {
           screenBloc.setForDistrict(1, "", false);
           searchEnabled = false;
-          screenBloc.setFilterTableData(
-              screenBloc.tableData);
+          screenBloc.setFilterTableData(screenBloc.tableData);
         },
         child: Column(
           children: <Widget>[
@@ -58,9 +58,13 @@ class _ListHeaderWidgetState extends State<ListHeaderWidget> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                            widget.visibleDistrict
-                                ? "District Wise Cases"
-                                : "State Wise Cases",
+                            widget.tabIndex == 1
+                                ? "Heatmap"
+                                : widget.tabIndex == 2
+                                    ? "Graph"
+                                    : widget.visibleDistrict
+                                        ? "District Wise Cases"
+                                        : "State Wise Cases",
                             style: TextStyle(
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.normal,
@@ -81,7 +85,9 @@ class _ListHeaderWidgetState extends State<ListHeaderWidget> {
                   ),
                 ),
                 Visibility(
-                  visible: searchEnabled && !widget.visibleDistrict,
+                  visible: searchEnabled &&
+                      !widget.visibleDistrict &&
+                      widget.tabIndex == 0,
                   child: Expanded(
                     flex: 1,
                     child: Row(
@@ -147,7 +153,9 @@ class _ListHeaderWidgetState extends State<ListHeaderWidget> {
                   ),
                 ),
                 Visibility(
-                  visible: !searchEnabled && !widget.visibleDistrict,
+                  visible: !searchEnabled &&
+                      !widget.visibleDistrict &&
+                      widget.tabIndex == 0,
                   child: Expanded(
                     flex: 0,
                     child: GestureDetector(
