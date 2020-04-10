@@ -4,6 +4,7 @@ import 'package:covid19app/charts/simpleLineChart.dart';
 import 'package:covid19app/model/StateData.dart';
 import 'package:covid19app/model/districtData.dart';
 import 'package:covid19app/model/mainData.dart';
+import 'package:covid19app/model/newsModel.dart';
 import 'package:covid19app/model/stateDelta.dart';
 import 'package:covid19app/utils/commons.dart';
 import 'package:http/http.dart';
@@ -18,8 +19,10 @@ class API {
 
   final String getData = "$_BASE_URL/$_DATA";
   final String getStateDistrictWise = "$_BASE_URL/$_STATE_DISTRICT";
-  final String getNewsApi =
+  final String getGNewsApi =
       "https://news.google.com/rss/search?q=covid19&hl=en-IN&gl=IN&ceid=IN:en";
+  final String getNewsApi =
+      "https://toibnews.timesofindia.indiatimes.com/cricket/node/";
 }
 
 class Network {
@@ -59,7 +62,7 @@ class Network {
     List<StateData> statewise = List();
 
     statewiseAll.forEach((element) {
-      logv(" StateName == $element");
+//      logv(" StateName == $element");
 
       StateDelta myDelta = StateDelta(
         active: 0,
@@ -138,9 +141,23 @@ class Network {
     return chartData;
   }
 
-  Future<List<RssItem>> getNews() async {
-    Response response = await get(_api.getNewsApi);
-    var feed = new RssFeed.parse(response.body);
-    return feed.items;
+  Future<List<NewsModel>> getNews() async {
+    Response response1 = await get(_api.getNewsApi + "75074630-1.json");
+    Response response2 = await get(_api.getNewsApi + "75074630-2.json");
+    Response response3 = await get(_api.getNewsApi + "75074630-3.json");
+    Map data1 = jsonDecode(response1.body);
+    Map data2 = jsonDecode(response2.body);
+    Map data3 = jsonDecode(response3.body);
+
+    List<NewsModel> newList = List();
+
+    List<dynamic> list1 = data1["data"]["contents"];
+    List<dynamic> list2 = data2["data"]["contents"];
+    List<dynamic> list3 = data3["data"]["contents"];
+    list1.forEach((element) {newList.add(NewsModel.map(element));});
+    list2.forEach((element) {newList.add(NewsModel.map(element));});
+    list3.forEach((element) {newList.add(NewsModel.map(element));});
+
+    return newList;
   }
 }

@@ -3,6 +3,7 @@ import 'dart:core';
 import 'package:covid19app/model/screenSwitcher.dart';
 import 'package:covid19app/screens/HomeScreen.dart';
 import 'package:covid19app/screens/bottomNavigation.dart';
+import 'package:covid19app/screens/newsDetails.dart';
 import 'package:covid19app/screens/stateDetails.dart';
 import 'package:covid19app/utils/str.dart';
 import 'package:flutter/material.dart';
@@ -19,10 +20,7 @@ void main() {
     ),
     initialRoute: "/",
     routes: {
-      "/": (context) =>  MultiProvider(providers: [
-        ChangeNotifierProvider<ScreenBloc>(create: (_) => ScreenBloc()),
-        ChangeNotifierProvider<ChartBloc>(create: (_) => ChartBloc()),
-      ], child: HomeScreen()),
+      "/": (context) =>  NavigationScreen(),
     },
   ));
 }

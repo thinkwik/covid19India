@@ -148,23 +148,26 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         backgroundColor: HEX.primaryColor,
         splashColor: Colors.white,
       ),
-      body: Center(
-        child: ChangeNotifierProvider(
-          create: (context) => TabBloc(),
-          child: Container(
-            width: 480.0,
-            color: HEX.primaryColor,
-            child: Column(
-              children: <Widget>[
-                HeaderInfo(_visible, timePlaceholder, total, totalDelta, active,
-                    activeDelta, recovered, recoveredDelta, death, deathDelta),
-                Expanded(
-                  child: Container(
-                    color: _visible ? Colors.white : HEX.primaryColor,
-                    child: MainScreenSwitcher(_visible, screenBloc, chartBloc),
-                  ),
-                )
-              ],
+      body: Container(
+        color: HEX.primaryColor,
+        child: Center(
+          child: ChangeNotifierProvider(
+            create: (context) => TabBloc(),
+            child: Container(
+              width: 480.0,
+              color: HEX.primaryColor,
+              child: Column(
+                children: <Widget>[
+                  HeaderInfo(_visible, timePlaceholder, total, totalDelta, active,
+                      activeDelta, recovered, recoveredDelta, death, deathDelta),
+                  Expanded(
+                    child: Container(
+                      color: _visible ? Colors.white : HEX.primaryColor,
+                      child: MainScreenSwitcher(_visible, screenBloc, chartBloc),
+                    ),
+                  )
+                ],
+              ),
             ),
           ),
         ),
@@ -205,7 +208,10 @@ class _MainScreenSwitcherState extends State<MainScreenSwitcher> {
                           height: 500,
                           child: LineChartMultiple(widget.chartBloc.chartData)),
                     )
-                  : WebViewScreen()),
+                  : WebViewScreen(
+                      link: "https://jineshsoni.github.io/covid19India-Heatmap/",
+                      title: "",
+                      backEnabled: false)),
     );
   }
 }
