@@ -15,7 +15,7 @@ Covid19 web app made with Flutter primarily focused on Android and iOS. Part of 
 ### Credits
 * Data source: [MOHFW GOI](https://www.mohfw.gov.in/)
 * Data source: [covid19india.org](https://www.covid19india.org/)
-* Latest news: [Times of Inida](https://timesofindia.indiatimes.com/india)
+* Latest news: [Times of India](https://timesofindia.indiatimes.com/india)
 * Helpline numbers: [Contact & helpline](https://api.rootnet.in/covid19-in/contacts)
 
 #### How to Run

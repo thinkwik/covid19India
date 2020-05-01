@@ -330,36 +330,33 @@ class _EmergencyNumberWidgetState extends State<EmergencyNumberWidget>
                               onTap: () {
                                 makeCall(this.list[index].number);
                               },
-                              child: Expanded(
-                                child: Material(
-                                    color: Colors.transparent,
-                                    shape: RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            color: Colors.blueAccent),
-                                        borderRadius:
-                                            BorderRadius.circular(20)),
-                                    child: Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(12, 6, 12, 6),
-                                        child: Row(
-                                          children: <Widget>[
-                                            Icon(
-                                              Icons.phone,
-                                              size: 14,
-                                              color: Colors.blueAccent,
-                                            ),
-                                            SizedBox(
-                                              width: 4.0,
-                                            ),
-                                            Text(
-                                              "Call",
-                                              style: TextStyle(
-                                                  color: Colors.blueAccent,
-                                                  fontSize: 12),
-                                            )
-                                          ],
-                                        ))),
-                              ),
+                              child: Material(
+                                  color: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                      side:
+                                          BorderSide(color: Colors.blueAccent),
+                                      borderRadius: BorderRadius.circular(20)),
+                                  child: Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(12, 6, 12, 6),
+                                      child: Row(
+                                        children: <Widget>[
+                                          Icon(
+                                            Icons.phone,
+                                            size: 14,
+                                            color: Colors.blueAccent,
+                                          ),
+                                          SizedBox(
+                                            width: 4.0,
+                                          ),
+                                          Text(
+                                            "Call",
+                                            style: TextStyle(
+                                                color: Colors.blueAccent,
+                                                fontSize: 12),
+                                          )
+                                        ],
+                                      ))),
                             ),
                           ],
                         ),
@@ -385,6 +382,7 @@ class AboutUS extends StatefulWidget {
 
 class _AboutUSState extends State<AboutUS> {
   String aboutUs = "";
+
   void getAllData() {
     logv(" About US ===== CAlling API");
     Network().getAboutUsContent().then((value) {
@@ -403,16 +401,16 @@ class _AboutUSState extends State<AboutUS> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "About Us",
-          style: TextStyle(color: Colors.black),
+        appBar: AppBar(
+          title: Text(
+            "About Us",
+            style: TextStyle(color: Colors.black),
+          ),
+          iconTheme: IconThemeData(color: Colors.black),
+          centerTitle: true,
+          elevation: 0,
+          backgroundColor: Colors.white,
         ),
-        iconTheme: IconThemeData(color: Colors.black),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.white,
-      ),
         body: Stack(
           children: <Widget>[
             Center(child: CircularProgressIndicator()),
