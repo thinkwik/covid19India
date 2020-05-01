@@ -1,10 +1,12 @@
 import 'package:covid19app/model/newsPageTimelineObject.dart';
 import 'package:covid19app/network/api.dart';
 import 'package:covid19app/screens/newsDetails.dart';
+import 'package:covid19app/screens/widgets/spritePainter.dart';
 import 'package:covid19app/screens/widgets/timelineNode.dart';
 import 'package:covid19app/utils/commons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:transparent_image/transparent_image.dart';
@@ -19,9 +21,15 @@ class _NewsWidgetState extends State<NewsWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "News",
-          style: TextStyle(color: Colors.black),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            SpriteDemo(),
+            Text(
+              "News",
+              style: TextStyle(color: Colors.black),
+            )
+          ],
         ),
         elevation: 0,
         backgroundColor: Colors.white,
@@ -29,8 +37,9 @@ class _NewsWidgetState extends State<NewsWidget> {
       ),
       body: Container(
         color: Colors.white30,
-        child: Center(child: Container(
-            width: 480, color: Colors.white, child: NewsPage())),
+        child: Center(
+            child:
+                Container(width: 480, color: Colors.white, child: NewsPage())),
       ),
     );
   }
@@ -42,7 +51,7 @@ class NewsPage extends StatefulWidget {
   _NewsPageState createState() => _NewsPageState();
 }
 
-class _NewsPageState extends State<NewsPage> {
+class _NewsPageState extends State<NewsPage> with WidgetsBindingObserver {
   List<NewsPageTimelineObject> list = List();
 
   void getAllData() {
@@ -56,6 +65,7 @@ class _NewsPageState extends State<NewsPage> {
                   lineType: TimelineNodeLineType.Full,
                   lineColor: Colors.grey[300]),
               message: element.title,
+              smalldesc: element.smalldesc,
               overridelink: element.overridelink,
               time: timeago.format(DateTime.fromMillisecondsSinceEpoch(
                   element.timestamp * 1000)),
@@ -68,14 +78,27 @@ class _NewsPageState extends State<NewsPage> {
   }
 
   @override
+  void didChangeAppLifecycleState(final AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      getAllData();
+    }
+  }
+
+  @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     getAllData();
   }
 
-  RefreshController _refreshController =
-  RefreshController(initialRefresh: false);
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
 
   void _onRefresh() async {
     getAllData();
@@ -84,7 +107,6 @@ class _NewsPageState extends State<NewsPage> {
   void _onLoading() async {
     // monitor network fetch
     getAllData();
-
   }
 
   @override
@@ -139,67 +161,72 @@ class _NewsPageState extends State<NewsPage> {
                   ),
                   Expanded(
                       child: GestureDetector(
-                        onTap: () {
-                          if (this.list[index].overridelink.length > 0) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    NewsDetails(
-                                      link: this.list[index].overridelink,
-                                      title: this.list[index].message,
-                                    ),
-                              ),
-                            );
-                          }
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                    onTap: () {
+                      if (this.list[index].overridelink.length > 0) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NewsDetails(
+                              link: this.list[index].overridelink,
+                              title: this.list[index].message,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
                             children: <Widget>[
-                              Row(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: Text(
-                                      this.list[index].message,
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                          color:
+                              Expanded(
+                                child: Text(
+                                  this.list[index].message,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      color:
                                           this.list[index].overridelink.length >
-                                              0
+                                                  0
                                               ? Colors.blue[700]
                                               : Colors.black),
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
-                              SizedBox(
-                                height: 8,
-                              ),
-                              Row(
-                                children: <Widget>[
-                                  Icon(
-                                    Icons.access_time,
-                                    size: 20,
-                                    color: Colors.grey[800],
-                                  ),
-                                  SizedBox(
-                                    width: 8,
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      this.list[index].time,
-                                      style: TextStyle(fontSize: 12),
-                                    ),
-                                  )
-                                ],
-                              )
                             ],
                           ),
-                        ),
-                      )),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Html(
+                            data: this.list[index].smalldesc,
+                          ),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Icon(
+                                Icons.access_time,
+                                size: 20,
+                                color: Colors.grey[800],
+                              ),
+                              SizedBox(
+                                width: 8,
+                              ),
+                              Expanded(
+                                child: Text(
+                                  this.list[index].time,
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  )),
                 ],
               ),
             ),

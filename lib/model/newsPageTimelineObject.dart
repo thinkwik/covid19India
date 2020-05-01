@@ -6,6 +6,7 @@ class NewsPageTimelineObject {
   final String time;
   final String image;
   final String overridelink;
+  final String smalldesc;
 
-  NewsPageTimelineObject({this.style, this.message, this.time, this.image, this.overridelink});
+  NewsPageTimelineObject({this.style, this.message, this.time, this.image, this.overridelink, this.smalldesc});
 }

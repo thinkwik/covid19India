@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
+import 'moreScreen.dart';
+
 class NavigationScreen extends StatefulWidget {
   @override
   NavigationScreenState createState() => NavigationScreenState();
@@ -30,14 +32,17 @@ class NavigationScreenState extends State<NavigationScreen>
       ], child: HomeScreen()),
       NewsWidget(),
       SymptomsWidget(),
+      MoreWidget(),
     ];
-    controller = TabController(length: 3, vsync: this);
+    controller = TabController(length: _fragments.length
+        , vsync: this);
     controller.addListener(_handleTabSelection);
   }
 
   void _handleTabSelection() {
     setState(() {
       _currentIndex = controller.index;
+
     });
   }
 
@@ -57,42 +62,44 @@ class NavigationScreenState extends State<NavigationScreen>
       ),
 //      body: _fragments[_currentIndex],
       resizeToAvoidBottomPadding: true,
-      bottomNavigationBar: SizedBox(
-        height: 56,
-        child: Material(
-          // set the color of the bottom navigation bar
-          color: Colors.white,
-          elevation: 0,
-          clipBehavior: Clip.antiAlias,
-          // set the tab bar as the child of bottom navigation bar
-          child: Visibility(
-            visible: true,
-            child: TabBar(
-              indicatorWeight: 2,
-              indicatorSize: TabBarIndicatorSize.label,
-              labelColor: Colors.blue[800],
-              unselectedLabelColor: Colors.grey[300],
-              indicatorColor: Colors.transparent,
-              tabs: <Tab>[
-                Tab(
-                  text: "Home",
-                  // set icon to the tab
-                  icon: FaIcon(FontAwesomeIcons.home, size: 24,),
-                ),
-                Tab(
-                  text: "News",
-                  // set icon to the tab
-                  icon: FaIcon(FontAwesomeIcons.newspaper, size: 24,),
-                ),
-                Tab(
-                  text: "Symptoms",
-                  // set icon to the tab
-                  icon: FaIcon(FontAwesomeIcons.stethoscope, size: 24,),
-                ),
-              ],
-              // setup the controller
-              controller: controller,
-            ),
+      bottomNavigationBar: Material(
+        // set the color of the bottom navigation bar
+        color: Colors.white,
+        elevation: 0,
+        clipBehavior: Clip.antiAlias,
+        // set the tab bar as the child of bottom navigation bar
+        child: Visibility(
+          visible: true,
+          child: TabBar(
+            indicatorWeight: 2,
+            indicatorSize: TabBarIndicatorSize.label,
+            labelColor: Colors.blue[800],
+            unselectedLabelColor: Colors.grey[300],
+            indicatorColor: Colors.transparent,
+            tabs: <Tab>[
+              Tab(
+                text: "Home",
+                // set icon to the tab
+                icon: FaIcon(FontAwesomeIcons.home, size: 24,),
+              ),
+              Tab(
+                text: "News",
+                // set icon to the tab
+                icon: FaIcon(FontAwesomeIcons.newspaper, size: 24,),
+              ),
+              Tab(
+                text: "Symptoms",
+                // set icon to the tab
+                icon: FaIcon(FontAwesomeIcons.stethoscope, size: 24,),
+              ),
+              Tab(
+                text: "More",
+                // set icon to the tab
+                icon: FaIcon(Icons.more_vert, size: 24,),
+              ),
+            ],
+            // setup the controller
+            controller: controller,
           ),
         ),
       ),

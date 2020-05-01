@@ -13,7 +13,7 @@ class _SymptomsWidgetState extends State<SymptomsWidget> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Covid19",
+          "Symptoms",
           style: TextStyle(color: Colors.black),
         ),
         elevation: 0,

@@ -1,28 +1,34 @@
 import 'dart:convert';
 
 import 'package:covid19app/charts/simpleLineChart.dart';
+import 'package:covid19app/model/HelplineNumberModel.dart';
 import 'package:covid19app/model/StateData.dart';
 import 'package:covid19app/model/districtData.dart';
 import 'package:covid19app/model/mainData.dart';
 import 'package:covid19app/model/newsModel.dart';
 import 'package:covid19app/model/stateDelta.dart';
 import 'package:covid19app/utils/commons.dart';
+import 'package:html/dom.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-import 'package:webfeed/domain/rss_feed.dart';
-import 'package:webfeed/domain/rss_item.dart';
+import 'package:html/parser.dart';
 
 class API {
-  static final String _BASE_URL = "https://api.covid19india.org";
+  static final String _BASE_URL = "https://covid19.thinkwik.com/api/v1/public";
   static final String _DATA = "data.json";
   static final String _STATE_DISTRICT = "state_district_wise.json";
 
   final String getData = "$_BASE_URL/$_DATA";
   final String getStateDistrictWise = "$_BASE_URL/$_STATE_DISTRICT";
+  final String getHelplineAPi =
+      "https://api.rootnet.in/covid19-in/contactsn";
   final String getGNewsApi =
       "https://news.google.com/rss/search?q=covid19&hl=en-IN&gl=IN&ceid=IN:en";
   final String getNewsApi =
       "https://toibnews.timesofindia.indiatimes.com/cricket/node/";
+  final String getNewsID =
+      "https://timesofindia.indiatimes.com/india";
+//      "https://raw.githubusercontent.com/jineshsoni/covid19india/master/newsId.txt";
 }
 
 class Network {
@@ -30,7 +36,8 @@ class Network {
 
   Future<MainData> getAllData() async {
     Response response = await get(_api.getData);
-    Map data = jsonDecode(response.body);
+    Map OrigData = jsonDecode(response.body);
+    dynamic data = OrigData["data"];
     dynamic statewiseAll = data["statewise"];
     dynamic statewise = data["statewise"][0];
     dynamic casesTimeSeries = data["cases_time_series"];
@@ -86,7 +93,9 @@ class Network {
 
   Future<List<DistrictData>> getStateDetailedData() async {
     Response response = await get(_api.getStateDistrictWise);
-    Map data = jsonDecode(response.body);
+//    Map data = jsonDecode(response.body);
+    Map OrigData = jsonDecode(response.body);
+    dynamic data = OrigData["data"];
 
     List<DistrictData> districtDataList = List();
 
@@ -142,9 +151,23 @@ class Network {
   }
 
   Future<List<NewsModel>> getNews() async {
-    Response response1 = await get(_api.getNewsApi + "75074630-1.json");
-    Response response2 = await get(_api.getNewsApi + "75074630-2.json");
-    Response response3 = await get(_api.getNewsApi + "75074630-3.json");
+    Response newsIdRes = await get(_api.getNewsID);
+    Document document = parse(newsIdRes.body);
+    logv(newsIdRes.body);
+    List<Node> nodes = document.getElementsByClassName("w_tle");
+    String liveblog = "";
+//    logv(nodes.toString());
+    nodes.forEach((element) {
+      logv(element.text);
+      if(element.firstChild.attributes["href"].contains("/liveblog/"))
+        liveblog = element.firstChild.attributes["href"].split("/liveblog/")[1].replaceAll(".cms", "");
+//      logv(element.firstChild.attributes["href"]);
+    });
+//    logv(liveblog);
+
+    Response response1 = await get(_api.getNewsApi + "$liveblog-1.json");
+    Response response2 = await get(_api.getNewsApi + "$liveblog-2.json");
+    Response response3 = await get(_api.getNewsApi + "$liveblog-3.json");
     Map data1 = jsonDecode(response1.body);
     Map data2 = jsonDecode(response2.body);
     Map data3 = jsonDecode(response3.body);
@@ -159,5 +182,18 @@ class Network {
     list3.forEach((element) {newList.add(NewsModel.map(element));});
 
     return newList;
+  }
+
+  Future<List<HelplineNumberModel>> getHelplineNumber() async {
+
+    Response response = await get(_api.getHelplineAPi);
+    Map data = jsonDecode(response.body);
+
+    List<HelplineNumberModel> list = List();
+
+    List<dynamic> list1 = data["data"]["contacts"]["regional"];
+    list1.forEach((element) {list.add(HelplineNumberModel.map(element));});
+
+    return list;
   }
 }

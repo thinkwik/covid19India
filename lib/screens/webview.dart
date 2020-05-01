@@ -42,11 +42,18 @@ class _WebViewScreenState extends State<WebViewScreen> {
             centerTitle: true,
             backgroundColor: Colors.white,
           ),
-          body: EasyWebView(
-            src: widget.link,
-            isHtml: false, // Use Html syntax
-            isMarkdown: false, // Use markdown syntax
-            convertToWidets: false, // Try to convert to flutter widgets
+          body: Stack(
+            children: <Widget>[
+              Center(child: CircularProgressIndicator()),
+              Center(
+                child: EasyWebView(
+                  src: widget.link,
+                  isHtml: false, // Use Html syntax
+                  isMarkdown: false, // Use markdown syntax
+                  convertToWidets: false, // Try to convert to flutter widgets
+                ),
+              )
+            ],
           ));
     }
   }

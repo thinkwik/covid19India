@@ -76,10 +76,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
               tableData.add(TableData(
                   stateName: element.state,
                   confirmed: element.confirmed,
-                  active: element.confirmed,
+                  active: (int.parse(element.confirmed) - int.parse(element.recovered) - int.parse(element.deaths)).toString(),
                   recovered: element.recovered,
                   deceases: element.deaths,
                   stateDelta: element.delta));
+
             });
 
             TableData total = tableData[0];
@@ -92,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
           });
         });
 
-        logv("Main data loaded ==${value.casesTimeSeries}");
+//        logv("Main data loaded ==${value.casesTimeSeries}");
         Network().getChartData(value).then((chartValue) {
           chartBloc.setChartData(chartValue);
         });
