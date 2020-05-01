@@ -7,28 +7,21 @@ import 'package:covid19app/model/districtData.dart';
 import 'package:covid19app/model/mainData.dart';
 import 'package:covid19app/model/newsModel.dart';
 import 'package:covid19app/model/stateDelta.dart';
-import 'package:covid19app/utils/commons.dart';
-import 'package:html/dom.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
-import 'package:html/parser.dart';
 
 class API {
   static final String _BASE_URL = "https://covid19.thinkwik.com/api/v1/public";
   static final String _DATA = "data.json";
   static final String _STATE_DISTRICT = "state_district_wise.json";
+  static final String _NEWS = "news";
+  static final String _CONTACTS = "contact";
 
   final String getData = "$_BASE_URL/$_DATA";
   final String getStateDistrictWise = "$_BASE_URL/$_STATE_DISTRICT";
-  final String getHelplineAPi =
-      "https://api.rootnet.in/covid19-in/contactsn";
-  final String getGNewsApi =
-      "https://news.google.com/rss/search?q=covid19&hl=en-IN&gl=IN&ceid=IN:en";
-  final String getNewsApi =
-      "https://toibnews.timesofindia.indiatimes.com/cricket/node/";
-  final String getNewsID =
-      "https://timesofindia.indiatimes.com/india";
-//      "https://raw.githubusercontent.com/jineshsoni/covid19india/master/newsId.txt";
+  final String getHelplineAPi = "$_BASE_URL/$_CONTACTS";
+  final String getNewsApi = "$_BASE_URL/$_NEWS";
+  final String getAboutUs = "https://raw.githubusercontent.com/thinkwik/covid19India/master/README.md";
 }
 
 class Network {
@@ -65,11 +58,9 @@ class Network {
   }
 
   Future<List<StateData>> getStateDataList(dynamic statewiseAll) async {
-//    Map data = jsonDecode(response.body);
     List<StateData> statewise = List();
 
     statewiseAll.forEach((element) {
-//      logv(" StateName == $element");
 
       StateDelta myDelta = StateDelta(
         active: 0,
@@ -93,7 +84,6 @@ class Network {
 
   Future<List<DistrictData>> getStateDetailedData() async {
     Response response = await get(_api.getStateDistrictWise);
-//    Map data = jsonDecode(response.body);
     Map OrigData = jsonDecode(response.body);
     dynamic data = OrigData["data"];
 
@@ -125,13 +115,10 @@ class Network {
     List<TimeSeriesData> death = List();
 
     mainData.casesTimeSeries.forEach((value) {
-//      logv("value == $value");
       String date = value["date"] + "2020";
-//      logv("date == $date");
       String day = DateFormat("dd").format(inputFormat.parse(date));
       String month = DateFormat("MM").format(inputFormat.parse(date));
       String year = "2020";
-//      logv("date STR == $day/$month/$year");
 
       confirmed.add(TimeSeriesData(
           time: DateTime(int.parse(year), int.parse(month), int.parse(day)),
@@ -151,35 +138,12 @@ class Network {
   }
 
   Future<List<NewsModel>> getNews() async {
-    Response newsIdRes = await get(_api.getNewsID);
-    Document document = parse(newsIdRes.body);
-    logv(newsIdRes.body);
-    List<Node> nodes = document.getElementsByClassName("w_tle");
-    String liveblog = "";
-//    logv(nodes.toString());
-    nodes.forEach((element) {
-      logv(element.text);
-      if(element.firstChild.attributes["href"].contains("/liveblog/"))
-        liveblog = element.firstChild.attributes["href"].split("/liveblog/")[1].replaceAll(".cms", "");
-//      logv(element.firstChild.attributes["href"]);
-    });
-//    logv(liveblog);
-
-    Response response1 = await get(_api.getNewsApi + "$liveblog-1.json");
-    Response response2 = await get(_api.getNewsApi + "$liveblog-2.json");
-    Response response3 = await get(_api.getNewsApi + "$liveblog-3.json");
-    Map data1 = jsonDecode(response1.body);
-    Map data2 = jsonDecode(response2.body);
-    Map data3 = jsonDecode(response3.body);
+    Response response = await get(_api.getNewsApi);
+    Map data = jsonDecode(response.body);
 
     List<NewsModel> newList = List();
-
-    List<dynamic> list1 = data1["data"]["contents"];
-    List<dynamic> list2 = data2["data"]["contents"];
-    List<dynamic> list3 = data3["data"]["contents"];
-    list1.forEach((element) {newList.add(NewsModel.map(element));});
-    list2.forEach((element) {newList.add(NewsModel.map(element));});
-    list3.forEach((element) {newList.add(NewsModel.map(element));});
+    List<dynamic> list = data["data"]["news"];
+    list.forEach((element) {newList.add(NewsModel.map(element));});
 
     return newList;
   }
@@ -196,4 +160,11 @@ class Network {
 
     return list;
   }
+
+  Future<String> getAboutUsContent() async {
+    Response response = await get(_api.getAboutUs);
+    return response.body.toString();
+  }
+
+
 }

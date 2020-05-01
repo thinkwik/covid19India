@@ -1,6 +1,7 @@
 import 'package:covid19app/model/HelplineNumberModel.dart';
 import 'package:covid19app/network/api.dart';
 import 'package:covid19app/utils/commons.dart';
+import 'package:easy_web_view/easy_web_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -122,7 +123,6 @@ class _MoreWidgetState extends State<MoreWidget> {
                       ),
                     ),
                   ),
-
                   SizedBox(
                     height: 16,
                   ),
@@ -132,7 +132,8 @@ class _MoreWidgetState extends State<MoreWidget> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => NewsDetails(
-                            link: "https://covid19.thinkwik.com/privacy-policy.html",
+                            link:
+                                "https://covid19.thinkwik.com/privacy-policy.html",
                             title: "Privacy Policy",
                           ),
                         ),
@@ -377,7 +378,28 @@ class _EmergencyNumberWidgetState extends State<EmergencyNumberWidget>
   }
 }
 
-class AboutUS extends StatelessWidget {
+class AboutUS extends StatefulWidget {
+  @override
+  _AboutUSState createState() => _AboutUSState();
+}
+
+class _AboutUSState extends State<AboutUS> {
+  String aboutUs = "";
+  void getAllData() {
+    logv(" About US ===== CAlling API");
+    Network().getAboutUsContent().then((value) {
+      setState(() {
+        aboutUs = value;
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getAllData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -391,7 +413,21 @@ class AboutUS extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.white,
       ),
-    );
+        body: Stack(
+          children: <Widget>[
+            Center(child: CircularProgressIndicator()),
+            Center(
+              child: Visibility(
+                visible: aboutUs.isNotEmpty,
+                child: EasyWebView(
+                  src: aboutUs,
+                  isHtml: false, // Use Html syntax
+                  isMarkdown: true, // Use markdown syntax
+                  convertToWidets: false, // Try to convert to flutter widgets
+                ),
+              ),
+            )
+          ],
+        ));
   }
 }
-
