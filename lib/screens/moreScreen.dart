@@ -3,6 +3,7 @@ import 'package:covid19app/network/api.dart';
 import 'package:covid19app/utils/commons.dart';
 import 'package:easy_web_view/easy_web_view.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter_phone_state/flutter_phone_state.dart';
@@ -15,8 +16,7 @@ class MoreWidget extends StatefulWidget {
   _MoreWidgetState createState() => _MoreWidgetState();
 }
 
-void _launchURL() async {
-  const url = 'mailto:developers@thinkwik.com';
+void _launchURL(String url) async {
   if (await canLaunch(url)) {
     await launch(url);
   } else {
@@ -79,12 +79,17 @@ class _MoreWidgetState extends State<MoreWidget> {
                 children: <Widget>[
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AboutUS(),
-                        ),
-                      );
+                      if (kIsWeb) {
+                        _launchURL(
+                            "https://github.com/thinkwik/covid19India/blob/master/README.md");
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AboutUS(),
+                          ),
+                        );
+                      }
                     },
                     child: Material(
                       color: Colors.transparent,
@@ -128,16 +133,19 @@ class _MoreWidgetState extends State<MoreWidget> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => NewsDetails(
-                            link:
-                                "https://covid19.thinkwik.com/privacy-policy.html",
-                            title: "Privacy Policy",
+                      if (kIsWeb) {
+                        _launchURL("https://covid19.thinkwik.com/privacy-policy.html");
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NewsDetails(
+                              link: "https://covid19.thinkwik.com/privacy-policy.html",
+                              title: "Privacy Policy",
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      }
                     },
                     child: Material(
                       color: Colors.transparent,
@@ -181,7 +189,7 @@ class _MoreWidgetState extends State<MoreWidget> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      _launchURL();
+                      _launchURL("mailto:developers@thinkwik.com");
                     },
                     child: Material(
                       color: Colors.transparent,

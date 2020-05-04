@@ -16,6 +16,7 @@ class StatsItem extends StatelessWidget {
         child: Column(
           children: <Widget>[
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Image.asset(
                   "assets/$myImage.png",
@@ -36,7 +37,7 @@ class StatsItem extends StatelessWidget {
             SizedBox(
               height: 12,
             ),
-            Row(
+            Column(
               children: <Widget>[
                 Text(
                   "$total",

@@ -61,6 +61,9 @@ class DistrictList extends StatelessWidget {
         total += int.parse(element.confirmed);
       });
     }
+    dDataList.sort((a,b){
+      return int.parse(b.confirmed).compareTo(int.parse(a.confirmed));
+    });
     dDataList.add(DData(confirmed: total.toString(), districtName: "Total", delta: "0"));
   }
 
