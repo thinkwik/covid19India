@@ -9,7 +9,7 @@ Covid19 web app made with Flutter primarily focused on Android and iOS. Part of 
 #### - Heatmap: [covid19India-Heatmap](https://jineshsoni.github.io/covid19India-Heatmap/)
 ###### A note: This is built with Mapbox's WebGL API.
 #### - Web demo: [Covid19 web](https://covid19.thinkwik.com/app)
-#### - Download app: [Android app](https://covid19.thinkwik.com/download)
+#### - Download app: [Android app](https://bit.ly/3fk78D6)
 #### - Project repo: [github.com/thinkwik/covid19India](https://github.com/thinkwik/covid19India)
 
 ### Credits
